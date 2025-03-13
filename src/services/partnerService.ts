@@ -124,7 +124,7 @@ export const updatePartner = async (partner: Partner): Promise<Partner> => {
 
 // Prüfen, ob ein Partner mit Rechnungen verknüpft ist
 export const checkPartnerHasInvoices = async (partnerId: string): Promise<boolean> => {
-  const { data, error, count } = await supabase
+  const { error, count } = await supabase
     .from('invoices')
     .select('id', { count: 'exact' })
     .eq('partnerId', partnerId);
