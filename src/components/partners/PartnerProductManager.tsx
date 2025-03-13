@@ -286,17 +286,17 @@ const PartnerProductManager: React.FC<PartnerProductManagerProps> = ({
                               </Box>
                             }
                             secondary={
-                              <Box sx={{ mt: 1 }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                  <Typography variant="body2" color="text.secondary">
+                              <Box component="div" sx={{ mt: 1 }}>
+                                <Box component="div" sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                  <Typography component="span" variant="body2" color="text.secondary">
                                     Verkaufspreis (brutto):
                                   </Typography>
-                                  <Typography variant="body2" fontWeight="bold" color="primary">
+                                  <Typography component="span" variant="body2" fontWeight="bold" color="primary">
                                     {formatCurrency(product.sellingPrice)}
                                   </Typography>
                                 </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                  <Typography variant="body2" color="text.secondary">
+                                <Box component="div" sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                  <Typography component="span" variant="body2" color="text.secondary">
                                     Verfügbarer Bestand:
                                   </Typography>
                                   <Chip 
@@ -431,17 +431,17 @@ const PartnerProductManager: React.FC<PartnerProductManagerProps> = ({
                               </Box>
                             }
                             secondary={
-                              <Box sx={{ mt: 1 }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                  <Typography variant="body2" color="text.secondary">
+                              <Box component="div" sx={{ mt: 1 }}>
+                                <Box component="div" sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                  <Typography component="span" variant="body2" color="text.secondary">
                                     Verkaufspreis (brutto):
                                   </Typography>
-                                  <Typography variant="body2" fontWeight="bold" color="primary">
+                                  <Typography component="span" variant="body2" fontWeight="bold" color="primary">
                                     {formatCurrency(product.sellingPrice)}
                                   </Typography>
                                 </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                  <Typography variant="body2" color="text.secondary">
+                                <Box component="div" sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                  <Typography component="span" variant="body2" color="text.secondary">
                                     Verfügbarer Bestand:
                                   </Typography>
                                   <Chip 
