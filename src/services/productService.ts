@@ -6,7 +6,6 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  purchasePrice: number;
   sellingPrice: number;
   stock: number;
   imageUrl?: string;
@@ -49,7 +48,6 @@ export const fetchProducts = async (categoryId?: string): Promise<Product[]> => 
     id: item.id,
     name: item.name,
     description: item.description,
-    purchasePrice: item.purchase_price,
     sellingPrice: item.selling_price,
     stock: item.stock,
     imageUrl: item.image_url,
@@ -83,7 +81,6 @@ export const fetchProductById = async (id: string): Promise<Product | null> => {
     id: data.id,
     name: data.name,
     description: data.description,
-    purchasePrice: data.purchase_price,
     sellingPrice: data.selling_price,
     stock: data.stock,
     imageUrl: data.image_url,
@@ -100,7 +97,6 @@ export const createProduct = async (product: Omit<Product, 'id'>): Promise<Produ
   const { 
     name, 
     description, 
-    purchasePrice, 
     sellingPrice, 
     stock, 
     imageUrl, 
@@ -112,7 +108,6 @@ export const createProduct = async (product: Omit<Product, 'id'>): Promise<Produ
     id: uuidv4(),
     name,
     description,
-    purchase_price: purchasePrice,
     selling_price: sellingPrice,
     stock,
     image_url: imageUrl,
@@ -135,7 +130,6 @@ export const createProduct = async (product: Omit<Product, 'id'>): Promise<Produ
     id: data.id,
     name: data.name,
     description: data.description,
-    purchasePrice: data.purchase_price,
     sellingPrice: data.selling_price,
     stock: data.stock,
     imageUrl: data.image_url,
@@ -153,7 +147,6 @@ export const updateProduct = async (product: Product): Promise<Product> => {
     id, 
     name, 
     description, 
-    purchasePrice, 
     sellingPrice, 
     stock, 
     imageUrl, 
@@ -166,7 +159,6 @@ export const updateProduct = async (product: Product): Promise<Product> => {
     .update({
       name,
       description,
-      purchase_price: purchasePrice,
       selling_price: sellingPrice,
       stock,
       image_url: imageUrl,
@@ -186,7 +178,6 @@ export const updateProduct = async (product: Product): Promise<Product> => {
     id: data.id,
     name: data.name,
     description: data.description,
-    purchasePrice: data.purchase_price,
     sellingPrice: data.selling_price,
     stock: data.stock,
     imageUrl: data.image_url,
@@ -357,7 +348,6 @@ export const fetchProductsByPartner = async (partnerId: string): Promise<Product
           id: item.id,
           name: item.name,
           description: item.description,
-          purchasePrice: item.purchase_price,
           sellingPrice: item.selling_price,
           stock: item.stock,
           imageUrl: item.image_url,
@@ -404,7 +394,6 @@ export const fetchProductsByPartner = async (partnerId: string): Promise<Product
       id: item.id,
       name: item.name,
       description: item.description,
-      purchasePrice: item.purchase_price,
       sellingPrice: item.selling_price,
       stock: item.stock,
       imageUrl: item.image_url,
@@ -543,7 +532,6 @@ export const fetchAvailableProductsForPartner = async (partnerId: string): Promi
         id: item.id,
         name: item.name,
         description: item.description,
-        purchasePrice: item.purchase_price,
         sellingPrice: item.selling_price,
         stock: item.stock,
         imageUrl: item.image_url,
@@ -584,7 +572,6 @@ export const fetchAvailableProductsForPartner = async (partnerId: string): Promi
           id: item.id,
           name: item.name,
           description: item.description,
-          purchasePrice: item.purchase_price,
           sellingPrice: item.selling_price,
           stock: item.stock,
           imageUrl: item.image_url,
@@ -628,7 +615,6 @@ export const fetchAvailableProductsForPartner = async (partnerId: string): Promi
       id: item.id,
       name: item.name,
       description: item.description,
-      purchasePrice: item.purchase_price,
       sellingPrice: item.selling_price,
       stock: item.stock,
       imageUrl: item.image_url,

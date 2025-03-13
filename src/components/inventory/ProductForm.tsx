@@ -33,7 +33,6 @@ interface ProductFormProps {
 const initialProduct: Omit<Product, 'id'> = {
   name: '',
   description: '',
-  purchasePrice: 0,
   sellingPrice: 0,
   stock: 0,
   imageUrl: '',
@@ -104,7 +103,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
     
     console.log(`Changing field ${name} to value:`, value);
 
-    if (name === 'purchasePrice' || name === 'sellingPrice' || name === 'stock') {
+    if (name === 'sellingPrice' || name === 'stock') {
       // Konvertiere Strings zu Zahlen für numerische Felder
       const numValue = parseFloat(value as string);
       setFormData({ ...formData, [name]: numValue });
@@ -135,10 +134,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
 
     if (!formData.name.trim()) {
       newErrors.name = 'Produktname ist erforderlich';
-    }
-
-    if (formData.purchasePrice < 0) {
-      newErrors.purchasePrice = 'Einkaufspreis muss größer oder gleich 0 sein';
     }
 
     if (formData.sellingPrice < 0) {
@@ -256,24 +251,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                margin="dense"
-                label="Einkaufspreis"
-                name="purchasePrice"
-                type="number"
-                value={formData.purchasePrice}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">€</InputAdornment>,
-                }}
-                error={!!errors.purchasePrice}
-                helperText={errors.purchasePrice}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -290,7 +268,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 margin="dense"

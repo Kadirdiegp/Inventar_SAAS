@@ -289,14 +289,6 @@ const PartnerProductManager: React.FC<PartnerProductManagerProps> = ({
                               <Box sx={{ mt: 1 }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                                   <Typography variant="body2" color="text.secondary">
-                                    Einkaufspreis (netto):
-                                  </Typography>
-                                  <Typography variant="body2" fontWeight="bold">
-                                    {formatCurrency(product.purchasePrice)}
-                                  </Typography>
-                                </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                  <Typography variant="body2" color="text.secondary">
                                     Verkaufspreis (brutto):
                                   </Typography>
                                   <Typography variant="body2" fontWeight="bold" color="primary">
@@ -440,14 +432,6 @@ const PartnerProductManager: React.FC<PartnerProductManagerProps> = ({
                             }
                             secondary={
                               <Box sx={{ mt: 1 }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                  <Typography variant="body2" color="text.secondary">
-                                    Einkaufspreis (netto):
-                                  </Typography>
-                                  <Typography variant="body2" fontWeight="bold">
-                                    {formatCurrency(product.purchasePrice)}
-                                  </Typography>
-                                </Box>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                                   <Typography variant="body2" color="text.secondary">
                                     Verkaufspreis (brutto):

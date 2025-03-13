@@ -247,10 +247,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
                 )}
               </Box>
               <Divider sx={{ my: 1 }} />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                <Typography variant="subtitle2">
-                  Einkauf: {formatCurrency(product.purchasePrice)}
-                </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                 <Typography variant="subtitle1" fontWeight="bold">
                   Verkauf: {formatCurrency(product.sellingPrice)}
                 </Typography>

@@ -286,7 +286,6 @@ const PartnerDetail: React.FC<PartnerDetailProps> = ({
                         <TableRow>
                           <TableCell>Produkt</TableCell>
                           <TableCell>Kategorie</TableCell>
-                          <TableCell align="right">Einkaufspreis</TableCell>
                           <TableCell align="right">Verkaufspreis</TableCell>
                           <TableCell align="right">Menge</TableCell>
                         </TableRow>
@@ -302,7 +301,6 @@ const PartnerDetail: React.FC<PartnerDetailProps> = ({
                                 sx={{ backgroundColor: '#e0e0ff', color: '#3700b3' }}
                               />
                             </TableCell>
-                            <TableCell align="right">{formatCurrency(product.purchasePrice)}</TableCell>
                             <TableCell align="right">{formatCurrency(product.sellingPrice)}</TableCell>
                             <TableCell align="right">{product.stock}</TableCell>
                           </TableRow>
