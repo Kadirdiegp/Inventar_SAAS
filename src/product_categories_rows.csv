@@ -1,0 +1,11 @@
+id,name,description,type,created_at,updated_at
+11916465-72fa-4ea2-98f9-5098d8ccac80,Süßwaren - Import,Importierte Süßwarenprodukte,IMPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
+69a9b0c6-ab24-4d9b-9076-a28467527478,Büromöbel - Export,Für den Export bestimmte Büromöbelprodukte,EXPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
+6fff1d5c-edc8-45a7-8c8f-56931513b1fd,Bürobedarf - Import,Importierte Bürobedarfsprodukte,IMPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
+79c5f22c-15cc-4b94-8a46-98c1096763cf,Bürobedarf - Export,Für den Export bestimmte Bürobedarfsprodukte,EXPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
+7f90e3e4-59a9-46fb-aa59-85a46754ddc2,Büromöbel - Import,Importierte Büromöbelprodukte,IMPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
+a4b90e34-93be-4b45-b082-f2e14eed4a0c,Snacks - Import,Importierte Snackprodukte,IMPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
+bf2687da-141e-44c6-8a85-fd1b70e34584,Getränke - Export,Für den Export bestimmte Getränkeprodukte,EXPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
+ca570445-d55e-4199-9c88-c014fdfe6f73,Getränke - Import,Importierte Getränkeprodukte,IMPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
+e53140f5-a33a-491b-9be9-0658b2ebe0af,Snacks - Export,Für den Export bestimmte Snackprodukte,EXPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
+ede3a87f-6fc3-4d42-8611-d95f089e14f7,Süßwaren - Export,Für den Export bestimmte Süßwarenprodukte,EXPORT,2025-03-13 18:14:07.839449+00,2025-03-13 18:14:07.839449+00
