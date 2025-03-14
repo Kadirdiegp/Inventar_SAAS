@@ -259,10 +259,10 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <>
+    <Box sx={{ backgroundColor: '#121212', color: '#E0E0E0' }}>
       <PageHeader 
         title="Dashboard" 
-        subtitle="Übersicht über Ihre Geschäftskennzahlen"
+        subtitle="Übersicht über Ihre Geschäftskennzahlen" 
       />
       
       <Grid container spacing={3}>
@@ -334,7 +334,7 @@ const Dashboard: React.FC = () => {
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
+                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#E0E0E0' }}>
                     {totalProducts}
                   </Typography>
                   <Typography variant="body2">Produkte</Typography>
@@ -362,7 +362,7 @@ const Dashboard: React.FC = () => {
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
+                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#E0E0E0' }}>
                     {totalPartners}
                   </Typography>
                   <Typography variant="body2">Partner</Typography>
@@ -390,7 +390,7 @@ const Dashboard: React.FC = () => {
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
+                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#E0E0E0' }}>
                     {totalInvoices}
                   </Typography>
                   <Typography variant="body2">Rechnungen</Typography>
@@ -726,7 +726,7 @@ const Dashboard: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
-    </>
+    </Box>
   );
 };
 

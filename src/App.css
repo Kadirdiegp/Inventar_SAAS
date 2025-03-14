@@ -1,3 +1,8 @@
+body {
+    background-color: #121212; /* Dunkler Hintergrund */
+    color: #E0E0E0; /* Helle Textfarbe */
+}
+
 .App {
   text-align: center;
 }
@@ -26,6 +31,11 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.button {
+    background-color: #BB86FC; /* Akzentfarbe für Buttons */
+    color: #FFFFFF;
 }
 
 @keyframes App-logo-spin {
