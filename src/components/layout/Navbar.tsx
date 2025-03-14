@@ -56,9 +56,9 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: '#121212' }}>
+      <AppBar position="static" sx={{ backgroundColor: '#000000', boxShadow: 'none' }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <img src={logo} alt="Logo" style={{ height: '40px', marginRight: '20px' }} />
+          <img src={logo} alt="Logo" style={{ height: '60px', marginRight: '20px' }} />
           <Box sx={{ display: 'flex' }}>
             {!isMobile && menuItems.map((item) => (
               <Button 

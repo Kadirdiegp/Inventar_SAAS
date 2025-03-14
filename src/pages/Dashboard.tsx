@@ -38,6 +38,47 @@ import { Product, Partner, Invoice, InvoiceItem } from '../types';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Dashboard: React.FC = () => {
+  // Custom styles for dashboard components
+  const styles = {
+    root: {
+      backgroundColor: '#000000',
+      minHeight: '100vh',
+      padding: '24px',
+    },
+    statsCard: {
+      height: '100%',
+      borderRadius: '0',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+      transition: 'transform 0.2s ease-in-out',
+      '&:hover': {
+        transform: 'translateY(-4px)',
+      },
+      backgroundColor: '#1a1a1a',
+      color: '#ffffff',
+    },
+    chartContainer: {
+      backgroundColor: '#1a1a1a',
+      borderRadius: '0',
+      padding: '20px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+      marginBottom: '24px',
+      color: '#ffffff',
+    },
+    actionButton: {
+      borderRadius: '8px',
+      textTransform: 'none',
+      padding: '8px 16px',
+      margin: '4px',
+      boxShadow: 'none',
+    },
+    tableContainer: {
+      backgroundColor: '#1a1a1a',
+      borderRadius: '0',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+      marginTop: '24px',
+      color: '#ffffff',
+    },
+  };
   const navigate = useNavigate();
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPartners, setTotalPartners] = useState(0);
@@ -259,23 +300,58 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <Box sx={{ backgroundColor: '#121212', color: '#E0E0E0' }}>
-      <PageHeader 
-        title="Dashboard" 
-        subtitle="Übersicht über Ihre Geschäftskennzahlen" 
-      />
+    <Box sx={{ 
+      backgroundColor: '#f8fafc',
+      minHeight: '100vh',
+      padding: '24px'
+    }}>
+      <Box sx={{ marginBottom: '32px' }}>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            color: '#1e293b',
+            fontWeight: 600,
+            marginBottom: '8px'
+          }}
+        >
+          Dashboard
+        </Typography>
+        <Typography 
+          variant="subtitle1" 
+          sx={{ 
+            color: '#64748b'
+          }}
+        >
+          Übersicht über Ihre Geschäftskennzahlen
+        </Typography>
+      </Box>
       
       <Grid container spacing={3}>
         {/* Quick Action Buttons */}
         <Grid item xs={12}>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              gap: 2, 
+              flexWrap: 'wrap', 
+              mb: 4,
+              '& .MuiButton-root': {
+                borderRadius: '8px',
+                textTransform: 'none',
+                fontWeight: 500,
+                fontSize: '0.9375rem',
+                padding: '8px 16px',
+                boxShadow: 'none'
+              }
+            }}
+          >
             <Button 
               variant="contained" 
               startIcon={<AddIcon />}
               onClick={handleAddProduct}
               sx={{ 
-                backgroundColor: '#6200ea',
-                '&:hover': { backgroundColor: '#5000c9' }
+                backgroundColor: '#6366f1',
+                '&:hover': { backgroundColor: '#4f46e5' }
               }}
             >
               Produkt hinzufügen
@@ -285,8 +361,8 @@ const Dashboard: React.FC = () => {
               startIcon={<AssignmentIcon />}
               onClick={handleCreateInvoice}
               sx={{ 
-                backgroundColor: '#388e3c',
-                '&:hover': { backgroundColor: '#2e7d32' }
+                backgroundColor: '#10b981',
+                '&:hover': { backgroundColor: '#059669' }
               }}
             >
               Rechnung erstellen
@@ -296,8 +372,8 @@ const Dashboard: React.FC = () => {
               startIcon={<PeopleIcon />}
               onClick={handleManagePartners}
               sx={{ 
-                backgroundColor: '#0288d1',
-                '&:hover': { backgroundColor: '#0277bd' }
+                backgroundColor: '#0ea5e9',
+                '&:hover': { backgroundColor: '#0284c7' }
               }}
             >
               Partner verwalten
@@ -307,8 +383,8 @@ const Dashboard: React.FC = () => {
               startIcon={<ShoppingCartIcon />}
               onClick={handleViewInventory}
               sx={{ 
-                backgroundColor: '#f57c00',
-                '&:hover': { backgroundColor: '#ef6c00' }
+                backgroundColor: '#f59e0b',
+                '&:hover': { backgroundColor: '#d97706' }
               }}
             >
               Inventar ansehen
@@ -321,25 +397,54 @@ const Dashboard: React.FC = () => {
           <Card 
             sx={{ 
               height: '100%',
-              background: 'linear-gradient(135deg, #6200ea 0%, #b388ff 100%)',
-              color: 'white',
-              transition: 'transform 0.2s',
+              backgroundColor: 'white',
+              color: '#1e293b',
+              transition: 'all 0.2s ease-in-out',
               '&:hover': {
-                transform: 'translateY(-5px)',
+                transform: 'translateY(-4px)',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
                 cursor: 'pointer'
-              }
+              },
+              borderRadius: '16px',
+              border: 'none',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
             }}
             onClick={handleViewInventory}
           >
-            <CardContent>
+            <CardContent sx={{ padding: '24px' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#E0E0E0' }}>
+                  <Typography 
+                    variant="h4" 
+                    component="div" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#1e293b',
+                      marginBottom: '4px'
+                    }}
+                  >
                     {totalProducts}
                   </Typography>
-                  <Typography variant="body2">Produkte</Typography>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    Produkte
+                  </Typography>
                 </Box>
-                <InventoryIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+                <Box 
+                  sx={{ 
+                    backgroundColor: '#6366f1',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    color: 'white'
+                  }}
+                >
+                  <InventoryIcon sx={{ fontSize: 24 }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -349,25 +454,54 @@ const Dashboard: React.FC = () => {
           <Card 
             sx={{ 
               height: '100%',
-              background: 'linear-gradient(135deg, #0288d1 0%, #29b6f6 100%)',
-              color: 'white',
-              transition: 'transform 0.2s',
+              backgroundColor: 'white',
+              color: '#1e293b',
+              transition: 'all 0.2s ease-in-out',
               '&:hover': {
-                transform: 'translateY(-5px)',
+                transform: 'translateY(-4px)',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
                 cursor: 'pointer'
-              }
+              },
+              borderRadius: '16px',
+              border: 'none',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
             }}
             onClick={handleManagePartners}
           >
-            <CardContent>
+            <CardContent sx={{ padding: '24px' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#E0E0E0' }}>
+                  <Typography 
+                    variant="h4" 
+                    component="div" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#1e293b',
+                      marginBottom: '4px'
+                    }}
+                  >
                     {totalPartners}
                   </Typography>
-                  <Typography variant="body2">Partner</Typography>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    Partner
+                  </Typography>
                 </Box>
-                <PeopleIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+                <Box 
+                  sx={{ 
+                    backgroundColor: '#0ea5e9',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    color: 'white'
+                  }}
+                >
+                  <PeopleIcon sx={{ fontSize: 24 }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -377,25 +511,54 @@ const Dashboard: React.FC = () => {
           <Card 
             sx={{ 
               height: '100%',
-              background: 'linear-gradient(135deg, #388e3c 0%, #66bb6a 100%)',
-              color: 'white',
-              transition: 'transform 0.2s',
+              backgroundColor: 'white',
+              color: '#1e293b',
+              transition: 'all 0.2s ease-in-out',
               '&:hover': {
-                transform: 'translateY(-5px)',
+                transform: 'translateY(-4px)',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
                 cursor: 'pointer'
-              }
+              },
+              borderRadius: '16px',
+              border: 'none',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
             }}
             onClick={() => navigate('/invoices')}
           >
-            <CardContent>
+            <CardContent sx={{ padding: '24px' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#E0E0E0' }}>
+                  <Typography 
+                    variant="h4" 
+                    component="div" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#1e293b',
+                      marginBottom: '4px'
+                    }}
+                  >
                     {totalInvoices}
                   </Typography>
-                  <Typography variant="body2">Rechnungen</Typography>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    Rechnungen
+                  </Typography>
                 </Box>
-                <ReceiptIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+                <Box 
+                  sx={{ 
+                    backgroundColor: '#10b981',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    color: 'white'
+                  }}
+                >
+                  <ReceiptIcon sx={{ fontSize: 24 }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -405,24 +568,53 @@ const Dashboard: React.FC = () => {
           <Card 
             sx={{ 
               height: '100%',
-              background: 'linear-gradient(135deg, #f57c00 0%, #ffb74d 100%)',
-              color: 'white',
-              transition: 'transform 0.2s',
+              backgroundColor: 'white',
+              color: '#1e293b',
+              transition: 'all 0.2s ease-in-out',
               '&:hover': {
-                transform: 'translateY(-5px)',
+                transform: 'translateY(-4px)',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
                 cursor: 'pointer'
-              }
+              },
+              borderRadius: '16px',
+              border: 'none',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
             }}
           >
-            <CardContent>
+            <CardContent sx={{ padding: '24px' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
+                  <Typography 
+                    variant="h4" 
+                    component="div" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#1e293b',
+                      marginBottom: '4px'
+                    }}
+                  >
                     {formatCurrency(totalRevenue)}
                   </Typography>
-                  <Typography variant="body2">Gesamtumsatz</Typography>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    Gesamtumsatz
+                  </Typography>
                 </Box>
-                <TrendingUpIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+                <Box 
+                  sx={{ 
+                    backgroundColor: '#f59e0b',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    color: 'white'
+                  }}
+                >
+                  <TrendingUpIcon sx={{ fontSize: 24 }} />
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -430,47 +622,228 @@ const Dashboard: React.FC = () => {
         
         {/* Chart */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, height: '100%' }}>
-            <Typography variant="h6" gutterBottom>Umsatzentwicklung</Typography>
-            <Bar options={chartOptions} data={chartData} />
-          </Paper>
+          <Card 
+            sx={{ 
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+              padding: '24px'
+            }}
+          >
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 600,
+                color: '#1e293b',
+                marginBottom: '24px'
+              }}
+            >
+              Umsatzentwicklung
+            </Typography>
+            <Box sx={{ height: '400px', position: 'relative' }}>
+              <Bar 
+                data={{
+                  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun'],
+                  datasets: [
+                    {
+                      label: 'Umsatz',
+                      data: monthlyRevenue,
+                      backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                      borderColor: 'rgba(99, 102, 241, 1)',
+                      borderWidth: 2,
+                      borderRadius: 4,
+                    },
+                    {
+                      label: 'Kosten',
+                      data: monthlyCosts,
+                      backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                      borderColor: 'rgba(239, 68, 68, 1)',
+                      borderWidth: 2,
+                      borderRadius: 4,
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'top' as const,
+                      labels: {
+                        padding: 20,
+                        font: {
+                          size: 12,
+                          weight: 500,
+                        },
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                      },
+                    },
+                    tooltip: {
+                      backgroundColor: 'rgba(17, 24, 39, 0.8)',
+                      padding: 12,
+                      titleFont: {
+                        size: 14,
+                        weight: 600,
+                      },
+                      bodyFont: {
+                        size: 13,
+                      },
+                      displayColors: false,
+                      callbacks: {
+                        label: function(context: any) {
+                          return `${context.dataset.label}: ${formatCurrency(context.raw)}`;
+                        },
+                      },
+                    },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                        display: false,
+                      },
+                      ticks: {
+                        font: {
+                          size: 12,
+                        },
+                        callback: function(value: any) {
+                          return formatCurrency(value);
+                        },
+                      },
+                    },
+                    x: {
+                      grid: {
+                        display: false,
+                      },
+                      ticks: {
+                        font: {
+                          size: 12,
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
+            </Box>
+          </Card>
         </Grid>
         
         {/* Low Stock Products */}
         <Grid item xs={12} md={4}>
-          <Paper 
+          <Card 
             sx={{ 
-              p: 3, 
-              height: '100%',
-              transition: 'transform 0.2s',
-              '&:hover': {
-                boxShadow: 3,
-                cursor: 'pointer'
-              }
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+              height: '100%'
             }}
-            onClick={handleViewInventory}
           >
-            <Typography variant="h6" gutterBottom>Produkte mit niedrigem Bestand</Typography>
-            {lowStockProducts.length === 0 ? (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                Keine Produkte mit niedrigem Bestand
+            <CardContent sx={{ padding: '24px' }}>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontWeight: 600,
+                  color: '#1e293b',
+                  marginBottom: '20px'
+                }}
+              >
+                Produkte mit niedrigem Bestand
               </Typography>
-            ) : (
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Produkt</TableCell>
-                      <TableCell align="right">Bestand</TableCell>
-                    </TableRow>
+              {lowStockProducts.length === 0 ? (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '200px',
+                    backgroundColor: 'rgba(99, 102, 241, 0.05)',
+                    borderRadius: '12px',
+                    padding: '24px'
+                  }}
+                >
+                  <InventoryIcon 
+                    sx={{ 
+                      fontSize: 48, 
+                      color: '#6366f1',
+                      marginBottom: 2,
+                      opacity: 0.5
+                    }} 
+                  />
+                  <Typography 
+                    sx={{ 
+                      color: '#64748b',
+                      textAlign: 'center',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    Keine Produkte mit niedrigem Bestand
+                  </Typography>
+                </Box>
+              ) : (
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell 
+                          sx={{ 
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                            color: '#64748b',
+                            fontWeight: 600,
+                            fontSize: '0.875rem',
+                            padding: '12px 8px'
+                          }}
+                        >
+                          Produkt
+                        </TableCell>
+                        <TableCell 
+                          align="right"
+                          sx={{ 
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                            color: '#64748b',
+                            fontWeight: 600,
+                            fontSize: '0.875rem',
+                            padding: '12px 8px'
+                          }}
+                        >
+                          Bestand
+                        </TableCell>
+                      </TableRow>
                   </TableHead>
                   <TableBody>
                     {lowStockProducts.map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell>{product.name}</TableCell>
-                        <TableCell align="right" sx={{ 
-                          color: product.stock === 0 ? 'error.main' : product.stock < 3 ? 'warning.main' : 'text.primary'
-                        }}>
+                      <TableRow 
+                        key={product.id}
+                        sx={{ 
+                          '&:hover': { 
+                            backgroundColor: 'rgba(0, 0, 0, 0.02)' 
+                          },
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => navigate(`/inventory/edit/${product.id}`)}
+                      >
+                        <TableCell 
+                          sx={{ 
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                            padding: '12px 8px',
+                            color: '#1e293b',
+                            fontSize: '0.875rem'
+                          }}
+                        >
+                          {product.name}
+                        </TableCell>
+                        <TableCell 
+                          align="right"
+                          sx={{ 
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                            padding: '12px 8px',
+                            color: product.stock === 0 ? '#ef4444' : product.stock < 3 ? '#f59e0b' : '#1e293b',
+                            fontWeight: 500,
+                            fontSize: '0.875rem'
+                          }}
+                        >
                           {product.stock}
                         </TableCell>
                       </TableRow>
@@ -479,45 +852,129 @@ const Dashboard: React.FC = () => {
                 </Table>
               </TableContainer>
             )}
-          </Paper>
+            </CardContent>
+          </Card>
         </Grid>
         
         {/* Recent Invoices */}
         <Grid item xs={12}>
-          <Paper 
+          <Card 
             sx={{ 
-              p: 3,
-              transition: 'transform 0.2s',
-              '&:hover': {
-                boxShadow: 3
-              }
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+              padding: '24px'
             }}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6">Neueste Rechnungen</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontWeight: 600,
+                  color: '#1e293b'
+                }}
+              >
+                Neueste Rechnungen
+              </Typography>
               <Button 
                 variant="outlined" 
                 size="small" 
                 onClick={() => navigate('/invoices')}
                 startIcon={<ListAltIcon />}
+                sx={{
+                  borderColor: '#6366f1',
+                  color: '#6366f1',
+                  '&:hover': {
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(99, 102, 241, 0.04)'
+                  }
+                }}
               >
                 Alle Rechnungen
               </Button>
             </Box>
             
             {recentInvoices.length === 0 ? (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                Keine Rechnungen vorhanden
-              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: '200px',
+                  backgroundColor: 'rgba(99, 102, 241, 0.05)',
+                  borderRadius: '12px',
+                  padding: '24px'
+                }}
+              >
+                <ReceiptIcon 
+                  sx={{ 
+                    fontSize: 48, 
+                    color: '#6366f1',
+                    marginBottom: 2,
+                    opacity: 0.5
+                  }} 
+                />
+                <Typography 
+                  sx={{ 
+                    color: '#64748b',
+                    textAlign: 'center',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  Keine Rechnungen vorhanden
+                </Typography>
+              </Box>
             ) : (
               <TableContainer>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Datum</TableCell>
-                      <TableCell>Partner</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell align="right">Betrag</TableCell>
+                      <TableCell 
+                        sx={{ 
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                          color: '#64748b',
+                          fontWeight: 600,
+                          fontSize: '0.875rem',
+                          padding: '12px 8px'
+                        }}
+                      >
+                        Datum
+                      </TableCell>
+                      <TableCell 
+                        sx={{ 
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                          color: '#64748b',
+                          fontWeight: 600,
+                          fontSize: '0.875rem',
+                          padding: '12px 8px'
+                        }}
+                      >
+                        Partner
+                      </TableCell>
+                      <TableCell 
+                        sx={{ 
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                          color: '#64748b',
+                          fontWeight: 600,
+                          fontSize: '0.875rem',
+                          padding: '12px 8px'
+                        }}
+                      >
+                        Status
+                      </TableCell>
+                      <TableCell 
+                        align="right"
+                        sx={{ 
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                          color: '#64748b',
+                          fontWeight: 600,
+                          fontSize: '0.875rem',
+                          padding: '12px 8px'
+                        }}
+                      >
+                        Betrag
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -526,143 +983,354 @@ const Dashboard: React.FC = () => {
                         key={invoice.id}
                         sx={{ 
                           '&:hover': { 
-                            backgroundColor: 'action.hover',
-                            cursor: 'pointer'
-                          }
+                            backgroundColor: 'rgba(0, 0, 0, 0.02)' 
+                          },
+                          cursor: 'pointer'
                         }}
                         onClick={() => navigate(`/invoices/${invoice.id}`)}
                       >
-                        <TableCell>{invoice.date}</TableCell>
-                        <TableCell>{invoice.partnerName}</TableCell>
-                        <TableCell>
+                        <TableCell 
+                          sx={{ 
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                            padding: '12px 8px',
+                            color: '#1e293b',
+                            fontSize: '0.875rem'
+                          }}
+                        >
+                          {invoice.date}
+                        </TableCell>
+                        <TableCell 
+                          sx={{ 
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                            padding: '12px 8px',
+                            color: '#1e293b',
+                            fontSize: '0.875rem'
+                          }}
+                        >
+                          {invoice.partnerName}
+                        </TableCell>
+                        <TableCell 
+                          sx={{ 
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                            padding: '12px 8px',
+                            fontSize: '0.875rem'
+                          }}
+                        >
                           <Box
                             sx={{
-                              display: 'inline-block',
-                              px: 1,
-                              py: 0.5,
-                              borderRadius: 1,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              px: 2,
+                              py: 1,
+                              borderRadius: '9999px',
+                              fontSize: '0.75rem',
+                              fontWeight: 500,
                               backgroundColor: 
-                                invoice.status === 'Bezahlt' ? 'success.light' : 
-                                invoice.status === 'Ausstehend' ? 'warning.light' : 'info.light',
+                                invoice.status === 'Bezahlt' ? 'rgba(16, 185, 129, 0.1)' : 
+                                invoice.status === 'Ausstehend' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(99, 102, 241, 0.1)',
                               color: 
-                                invoice.status === 'Bezahlt' ? 'success.dark' : 
-                                invoice.status === 'Ausstehend' ? 'warning.dark' : 'info.dark',
+                                invoice.status === 'Bezahlt' ? '#10b981' : 
+                                invoice.status === 'Ausstehend' ? '#f59e0b' : '#6366f1'
                             }}
                           >
                             {invoice.status}
                           </Box>
                         </TableCell>
-                        <TableCell align="right">{formatCurrency(invoice.total)}</TableCell>
+                        <TableCell 
+                          align="right"
+                          sx={{ 
+                            borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                            padding: '12px 8px',
+                            color: '#1e293b',
+                            fontSize: '0.875rem',
+                            fontWeight: 500
+                          }}
+                        >
+                          {formatCurrency(invoice.total)}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </TableContainer>
             )}
-          </Paper>
+          </Card>
         </Grid>
 
         {/* Partner Purchases Table */}
         <Grid item xs={12}>
-          <Card sx={{ 
-            height: '100%', 
-            boxShadow: 3,
-            transition: 'all 0.2s',
-            '&:hover': {
-              boxShadow: 6
-            }
-          }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6">
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <PeopleIcon sx={{ mr: 1 }} />
-                    Partner und ihre Produkte
-                  </Box>
-                </Typography>
-                <Button 
-                  variant="outlined" 
-                  size="small" 
-                  onClick={() => navigate('/partners')}
-                  startIcon={<PeopleIcon />}
+          <Card 
+            sx={{ 
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+              padding: '24px'
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box 
+                  sx={{ 
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    marginRight: '16px'
+                  }}
                 >
-                  Alle Partner
-                </Button>
+                  <PeopleIcon sx={{ fontSize: 24, color: '#6366f1' }} />
+                </Box>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 600,
+                    color: '#1e293b'
+                  }}
+                >
+                  Partner und ihre Produkte
+                </Typography>
               </Box>
-              
-              <TableContainer component={Paper} elevation={0}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Partner</TableCell>
-                      <TableCell>Kontakt</TableCell>
-                      <TableCell align="center">Telefon</TableCell>
-                      <TableCell align="center">Anz. Produkte</TableCell>
-                      <TableCell align="center">Anz. Rechnungen</TableCell>
-                      <TableCell align="right">Gesamtausgaben</TableCell>
-                      <TableCell align="center">Verknüpfte Produkte</TableCell>
-                    </TableRow>
-                  </TableHead>
+              <Button 
+                variant="outlined" 
+                size="small" 
+                onClick={() => navigate('/partners')}
+                startIcon={<PeopleIcon />}
+                sx={{
+                  borderColor: '#6366f1',
+                  color: '#6366f1',
+                  '&:hover': {
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(99, 102, 241, 0.04)'
+                  }
+                }}
+              >
+                Alle Partner
+              </Button>
+            </Box>
+            
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell 
+                      sx={{ 
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                        color: '#64748b',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        padding: '12px 8px'
+                      }}
+                    >
+                      Partner
+                    </TableCell>
+                    <TableCell 
+                      sx={{ 
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                        color: '#64748b',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        padding: '12px 8px'
+                      }}
+                    >
+                      Kontakt
+                    </TableCell>
+                    <TableCell 
+                      align="center"
+                      sx={{ 
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                        color: '#64748b',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        padding: '12px 8px'
+                      }}
+                    >
+                      Telefon
+                    </TableCell>
+                    <TableCell 
+                      align="center"
+                      sx={{ 
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                        color: '#64748b',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        padding: '12px 8px'
+                      }}
+                    >
+                      Anz. Produkte
+                    </TableCell>
+                    <TableCell 
+                      align="center"
+                      sx={{ 
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                        color: '#64748b',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        padding: '12px 8px'
+                      }}
+                    >
+                      Anz. Rechnungen
+                    </TableCell>
+                    <TableCell 
+                      align="right"
+                      sx={{ 
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                        color: '#64748b',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        padding: '12px 8px'
+                      }}
+                    >
+                      Gesamtausgaben
+                    </TableCell>
+                    <TableCell 
+                      align="center"
+                      sx={{ 
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                        color: '#64748b',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        padding: '12px 8px'
+                      }}
+                    >
+                      Verknüpfte Produkte
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
                   <TableBody>
                     {partnerPurchases
                       .sort((a, b) => b.totalSpent - a.totalSpent)
                       .map((partner) => (
                         <TableRow 
                           key={partner.id} 
-                          hover
+                          sx={{ 
+                            '&:hover': { 
+                              backgroundColor: 'rgba(0, 0, 0, 0.02)' 
+                            },
+                            cursor: 'pointer'
+                          }}
                           onClick={() => navigate(`/partners/${partner.id}`)}
-                          sx={{ cursor: 'pointer' }}
                         >
-                          <TableCell>{partner.name}</TableCell>
-                          <TableCell>{partner.contact || '-'}</TableCell>
-                          <TableCell align="center">{partner.phone || '-'}</TableCell>
-                          <TableCell align="center">{partner.productCount}</TableCell>
-                          <TableCell align="center">{partner.invoiceCount}</TableCell>
-                          <TableCell align="right">{formatCurrency(partner.totalSpent)}</TableCell>
-                          <TableCell align="center">
+                          <TableCell 
+                            sx={{ 
+                              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                              padding: '12px 8px',
+                              color: '#1e293b',
+                              fontSize: '0.875rem'
+                            }}
+                          >
+                            {partner.name}
+                          </TableCell>
+                          <TableCell 
+                            sx={{ 
+                              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                              padding: '12px 8px',
+                              color: '#1e293b',
+                              fontSize: '0.875rem'
+                            }}
+                          >
+                            {partner.contact || '-'}
+                          </TableCell>
+                          <TableCell 
+                            align="center"
+                            sx={{ 
+                              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                              padding: '12px 8px',
+                              color: '#1e293b',
+                              fontSize: '0.875rem'
+                            }}
+                          >
+                            {partner.phone || '-'}
+                          </TableCell>
+                          <TableCell 
+                            align="center"
+                            sx={{ 
+                              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                              padding: '12px 8px',
+                              color: '#1e293b',
+                              fontSize: '0.875rem',
+                              fontWeight: 500
+                            }}
+                          >
+                            {partner.productCount}
+                          </TableCell>
+                          <TableCell 
+                            align="center"
+                            sx={{ 
+                              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                              padding: '12px 8px',
+                              color: '#1e293b',
+                              fontSize: '0.875rem',
+                              fontWeight: 500
+                            }}
+                          >
+                            {partner.invoiceCount}
+                          </TableCell>
+                          <TableCell 
+                            align="right"
+                            sx={{ 
+                              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                              padding: '12px 8px',
+                              color: '#1e293b',
+                              fontSize: '0.875rem',
+                              fontWeight: 500
+                            }}
+                          >
+                            {formatCurrency(partner.totalSpent)}
+                          </TableCell>
+                          <TableCell 
+                            align="center"
+                            sx={{ 
+                              borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+                              padding: '12px 8px'
+                            }}
+                          >
                             {partner.productCount > 0 ? (
-                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, justifyContent: 'center' }}>
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
                                 {partner.items
                                   .reduce((acc: any[], item: any) => {
-                                    // Nur eindeutige Produkte in die Liste aufnehmen
                                     if (!acc.some(p => p.productId === item.productId)) {
                                       acc.push(item);
                                     }
                                     return acc;
                                   }, [])
-                                  .slice(0, 3) // Maximal 3 Produkte anzeigen
+                                  .slice(0, 3)
                                   .map((item: any, index: number) => (
-                                    <Typography 
-                                      key={`${partner.id}-${item.productId}-${index}`} 
-                                      variant="body2" 
+                                    <Box
+                                      key={`${partner.id}-${item.productId}-${index}`}
                                       sx={{ 
-                                        px: 1, 
-                                        py: 0.5, 
-                                        borderRadius: 1, 
-                                        backgroundColor: '#f0f0ff',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        px: 2,
+                                        py: 1,
+                                        borderRadius: '9999px',
+                                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                        color: '#6366f1',
                                         fontSize: '0.75rem',
+                                        fontWeight: 500,
+                                        maxWidth: '120px',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        maxWidth: '100px'
+                                        textOverflow: 'ellipsis'
                                       }}
                                     >
                                       {item.productName}
-                                    </Typography>
+                                    </Box>
                                   ))}
                                 {partner.productCount > 3 && (
-                                  <Typography 
-                                    variant="body2" 
+                                  <Box
                                     sx={{ 
-                                      px: 1, 
-                                      py: 0.5, 
-                                      borderRadius: 1, 
-                                      backgroundColor: '#e0e0e0',
-                                      fontSize: '0.75rem'
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      px: 2,
+                                      py: 1,
+                                      borderRadius: '9999px',
+                                      backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                      color: '#6366f1',
+                                      fontSize: '0.75rem',
+                                      fontWeight: 500
                                     }}
                                   >
                                     +{partner.productCount - 3} mehr
-                                  </Typography>
+                                  </Box>
                                 )}
                               </Box>
                             ) : (
@@ -674,56 +1342,7 @@ const Dashboard: React.FC = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-            </CardContent>
           </Card>
-        </Grid>
-
-        {/* Partner Purchases */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>Partner-Einkäufe</Typography>
-            {partnerPurchases.length === 0 ? (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                Keine Partner vorhanden
-              </Typography>
-            ) : (
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Partner</TableCell>
-                      <TableCell>Kontakt</TableCell>
-                      <TableCell>Anzahl Rechnungen</TableCell>
-                      <TableCell>Anzahl Produkte</TableCell>
-                      <TableCell>Letzter Einkauf</TableCell>
-                      <TableCell align="right">Gesamtausgaben</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {partnerPurchases.map((partner) => (
-                      <TableRow 
-                        key={partner.id}
-                        sx={{ 
-                          '&:hover': { 
-                            backgroundColor: 'action.hover',
-                            cursor: 'pointer'
-                          }
-                        }}
-                        onClick={() => navigate(`/partners/${partner.id}`)}
-                      >
-                        <TableCell>{partner.name}</TableCell>
-                        <TableCell>{partner.contact || '-'}</TableCell>
-                        <TableCell>{partner.invoiceCount}</TableCell>
-                        <TableCell>{partner.productCount}</TableCell>
-                        <TableCell>{partner.lastPurchase}</TableCell>
-                        <TableCell align="right">{formatCurrency(partner.totalSpent)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          </Paper>
         </Grid>
       </Grid>
     </Box>

@@ -8,27 +8,32 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        minHeight: '100vh',
+        backgroundColor: '#000000'
+      }}>
       <Navbar />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
-        <Paper 
-          elevation={3} 
+        <Box 
           sx={{ 
             p: 3, 
-            borderRadius: 2,
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)'
+            borderRadius: 0,
+            backgroundColor: '#000000',
+            color: '#ffffff'
           }}
         >
           {children}
-        </Paper>
+        </Box>
       </Container>
       <Box 
         component="footer" 
         sx={{ 
           py: 2, 
           textAlign: 'center', 
-          backgroundColor: '#f5f5f5',
+          backgroundColor: '#000000',
+          color: '#ffffff',
           mt: 'auto' 
         }}
       >
