@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box } from '@mui/material';
+import { Container, Box, Typography, Link } from '@mui/material';
 import Navbar from './Navbar';
 
 interface LayoutProps {
@@ -35,7 +35,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           mt: 'auto' 
         }}
       >
-        Inventar & Rechnungsverwaltung {new Date().getFullYear()}
+        <Typography variant="body2" color="text.secondary" sx={{ color: '#9e9e9e' }}>
+          Inventar & Rechnungsverwaltung {new Date().getFullYear()} | 
+          <span style={{ marginLeft: '6px' }}>
+            Entwickelt von <Link href="https://github.com/Kadirdiegp" target="_blank" rel="noopener" sx={{ color: '#29b6f6', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+              Kadir Diego Padin Rodriguez
+            </Link>
+          </span>
+        </Typography>
       </Box>
     </Box>
   );
