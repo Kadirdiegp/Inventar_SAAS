@@ -25,7 +25,15 @@ Ein modernes Inventar-Management-System für kleine und mittelständische Untern
 
 ## Umgebungsvariablen
 
-Die Anwendung verwendet Supabase für die Datenbankverbindung. Die Verbindungsdaten sind direkt im Code konfiguriert.
+Erstelle eine `.env` Datei im Root-Verzeichnis des Projekts basierend auf der Vorlage in `.env.example`:
+
+```
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+REACT_APP_SUPABASE_SERVICE_KEY=your_supabase_service_key
+```
+
+Die Anwendung nutzt Supabase für die Datenbankverwaltung. Die Zugangsdaten werden über Umgebungsvariablen konfiguriert und sind nicht im Code enthalten.
 
 ## Deployment
 

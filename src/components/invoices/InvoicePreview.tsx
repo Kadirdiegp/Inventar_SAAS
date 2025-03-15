@@ -19,8 +19,7 @@ import {
 } from '@mui/material';
 import { Invoice, Partner } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/helpers';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 
 interface InvoicePreviewProps {
   open: boolean;
@@ -37,27 +36,121 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
 }) => {
   const invoiceRef = useRef<HTMLDivElement>(null);
 
-  const generatePDF = async () => {
-    if (!invoiceRef.current) return;
-
-    const canvas = await html2canvas(invoiceRef.current, {
-      scale: 2,
-      useCORS: true,
-      logging: false
-    });
-
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const imgWidth = 210;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    pdf.save(`Rechnung_${invoice.id.substring(0, 8).toUpperCase()}.pdf`);
+  const generatePDF = () => {
+    try {
+      // A4 Format: 210x297mm
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      // Setze Schriftart und -größe
+      pdf.setFontSize(12);
+      
+      // Füge Firmenlogo/Header hinzu
+      pdf.setFontSize(20);
+      pdf.setTextColor(98, 0, 234); // #6200ea
+      pdf.text('RECHNUNG', 20, 20);
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text(`Rechnungsnummer: #${invoice.id.substring(0, 8).toUpperCase()}`, 20, 30);
+      pdf.text(`Datum: ${formatDate(invoice.date)}`, 20, 35);
+      
+      // Unternehmensinfo
+      pdf.setFontSize(12);
+      pdf.text('Ihr Unternehmen GmbH', 140, 20);
+      pdf.setFontSize(10);
+      pdf.text('Musterstraße 123', 140, 25);
+      pdf.text('12345 Musterstadt', 140, 30);
+      pdf.text('info@ihrunternehmen.de', 140, 35);
+      pdf.text('+49 123 456789', 140, 40);
+      
+      // Trennlinie
+      pdf.line(20, 45, 190, 45);
+      
+      // Kundeninfo
+      pdf.setFontSize(11);
+      pdf.text('Rechnungsempfänger:', 20, 55);
+      pdf.setFontSize(10);
+      pdf.text(invoice.partnerName, 20, 60);
+      if (partner) {
+        pdf.text(partner.contact || '', 20, 65);
+        pdf.text(partner.address || '', 20, 70);
+        pdf.text(partner.email || '', 20, 75);
+        pdf.text(partner.phone || '', 20, 80);
+      }
+      
+      // Zahlungsinfos
+      pdf.setFontSize(11);
+      pdf.text('Zahlungsinformationen:', 120, 55);
+      pdf.setFontSize(10);
+      pdf.text('Bank: Musterbank', 120, 60);
+      pdf.text('IBAN: DE12 3456 7890 1234 5678 90', 120, 65);
+      pdf.text('BIC: MUSTBIC123', 120, 70);
+      pdf.text('Zahlungsziel: 14 Tage nach Rechnungserhalt', 120, 75);
+      
+      // Tabellenkopf für Produkte
+      pdf.setFillColor(245, 245, 245);
+      pdf.rect(20, 90, 170, 8, 'F');
+      pdf.setFontSize(10);
+      pdf.text('Produkt', 25, 95);
+      pdf.text('Preis', 100, 95);
+      pdf.text('Menge', 130, 95);
+      pdf.text('Gesamt', 160, 95);
+      
+      // Tabelleninhalt
+      let yPos = 105;
+      invoice.items.forEach((item, index) => {
+        pdf.text(item.productName, 25, yPos);
+        pdf.text(formatCurrency(item.unitPrice), 100, yPos);
+        pdf.text(item.quantity.toString(), 130, yPos);
+        pdf.text(formatCurrency(item.total), 160, yPos);
+        yPos += 8;
+        
+        // Neue Seite, wenn nötig
+        if (yPos > 270) {
+          pdf.addPage();
+          yPos = 20;
+        }
+      });
+      
+      // Zusammenfassung
+      yPos += 10;
+      pdf.text('Zwischensumme:', 130, yPos);
+      pdf.text(formatCurrency(invoice.subtotal), 160, yPos);
+      
+      yPos += 6;
+      pdf.text('MwSt (19%):', 130, yPos);
+      pdf.text(formatCurrency(invoice.tax), 160, yPos);
+      
+      yPos += 8;
+      pdf.setFillColor(245, 245, 245);
+      pdf.rect(120, yPos-5, 70, 8, 'F');
+      pdf.setFontSize(11);
+      pdf.text('Gesamtsumme:', 130, yPos);
+      pdf.setTextColor(98, 0, 234); // #6200ea
+      pdf.text(formatCurrency(invoice.total), 160, yPos);
+      
+      // Notizen
+      if (invoice.notes) {
+        yPos += 15;
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(11);
+        pdf.text('Notizen:', 20, yPos);
+        pdf.setFontSize(10);
+        yPos += 6;
+        pdf.text(invoice.notes, 20, yPos);
+      }
+      
+      // Fußzeile
+      pdf.setFontSize(9);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text('Vielen Dank für Ihr Vertrauen und Ihre Geschäftsbeziehung!', 65, 280);
+      
+      // PDF speichern
+      pdf.save(`Rechnung_${invoice.id.substring(0, 8).toUpperCase()}.pdf`);
+    } catch (error) {
+      console.error("Fehler bei der PDF-Generierung:", error);
+      alert("Bei der PDF-Erstellung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.");
+    }
   };
 
   return (
