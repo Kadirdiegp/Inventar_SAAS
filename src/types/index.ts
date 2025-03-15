@@ -3,10 +3,11 @@ export interface Product {
   name: string;
   description: string;
   sellingPrice: number;
+  purchasePrice: number;
   stock: number;
-  imageUrl?: string;
-  category?: string;
-  category_id?: string;
+  imageUrl?: string | null;
+  category?: string | null;
+  category_id?: string | null;
   categoryName?: string;
   categoryType?: 'IMPORT' | 'EXPORT' | 'BOTH';
   product_categories?: {
@@ -14,7 +15,13 @@ export interface Product {
     name: string;
     type: 'IMPORT' | 'EXPORT' | 'BOTH';
     description?: string;
-  };
+  } | {
+    id: string;
+    name: string;
+    type: 'IMPORT' | 'EXPORT' | 'BOTH';
+    description?: string;
+  }[] | null;
+  partnerPrice?: number | null;
 }
 
 export interface Partner {

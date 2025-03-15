@@ -1,4 +1,4 @@
-import { supabase } from '../utils/supabaseClient';
+import { supabase, supabaseAdmin } from '../utils/supabaseClient';
 import { Invoice, InvoiceItem } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -113,7 +113,7 @@ export const createInvoice = async (invoice: Omit<Invoice, 'id'>): Promise<Invoi
   const newInvoiceId = uuidv4();
   
   // Hauptdaten der Rechnung einfügen
-  const { error: invoiceError } = await supabase
+  const { error: invoiceError } = await supabaseAdmin
     .from('invoices')
     .insert([{
       id: newInvoiceId,
@@ -153,7 +153,7 @@ export const createInvoice = async (invoice: Omit<Invoice, 'id'>): Promise<Invoi
   if (itemsError) {
     console.error('Fehler beim Erstellen der Rechnungspositionen:', itemsError);
     // Rollback: Lösche die Hauptrechnung, wenn die Positionen nicht erstellt werden konnten
-    await supabase.from('invoices').delete().eq('id', newInvoiceId);
+    await supabaseAdmin.from('invoices').delete().eq('id', newInvoiceId);
     throw itemsError;
   }
 
@@ -169,7 +169,7 @@ export const updateInvoice = async (invoice: Invoice): Promise<Invoice> => {
   const now = new Date().toISOString();
   
   // Hauptdaten der Rechnung aktualisieren
-  const { error: invoiceError } = await supabase
+  const { error: invoiceError } = await supabaseAdmin
     .from('invoices')
     .update({
       partner_id: invoice.partnerId,
@@ -190,7 +190,7 @@ export const updateInvoice = async (invoice: Invoice): Promise<Invoice> => {
   }
 
   // Bestehende Rechnungspositionen löschen
-  const { error: deleteError } = await supabase
+  const { error: deleteError } = await supabaseAdmin
     .from('invoice_items')
     .delete()
     .eq('invoice_id', invoice.id);

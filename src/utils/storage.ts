@@ -1,6 +1,7 @@
 import { Product, Partner, Invoice } from '../types';
 import { generateId } from './helpers';
 import { supabase } from '../utils/supabaseClient';
+import { createInvoice, updateInvoice as updateInvoiceService, deleteInvoice as deleteInvoiceService, fetchInvoices } from '../services/invoiceService'; // Korrigierter Import-Pfad
 
 // Sample initial data
 const initialProducts: Product[] = [
@@ -9,6 +10,7 @@ const initialProducts: Product[] = [
     name: 'Produkt 1',
     description: 'Beschreibung für Produkt 1',
     sellingPrice: 19.99,
+    purchasePrice: 14.99,
     stock: 25,
     imageUrl: '/placeholder.jpg',
     category: 'Kategorie A'
@@ -18,6 +20,7 @@ const initialProducts: Product[] = [
     name: 'Produkt 2',
     description: 'Beschreibung für Produkt 2',
     sellingPrice: 29.99,
+    purchasePrice: 22.99,
     stock: 15,
     imageUrl: '/placeholder.jpg',
     category: 'Kategorie B'
@@ -48,7 +51,6 @@ const initialPartners: Partner[] = [
 // Local Storage Keys
 const PRODUCTS_KEY = 'inventory_products';
 const PARTNERS_KEY = 'inventory_partners';
-const INVOICES_KEY = 'inventory_invoices';
 
 // Product Storage Functions
 export const getProducts = (): Product[] => {
@@ -126,53 +128,48 @@ export const deletePartner = (id: string): void => {
 
 // Invoice Storage Functions
 export const getInvoices = async (): Promise<Invoice[]> => {
-  const { data, error } = await supabase
-    .from('invoices')
-    .select('*');
-
-  if (error) {
+  try {
+    // Verwende die fetchInvoices-Funktion aus invoiceService.ts, 
+    // die korrekt Rechnungen und ihre Positionen abruft
+    const invoices = await fetchInvoices();
+    return invoices;
+  } catch (error) {
     console.error('Fehler beim Abrufen der Rechnungen:', error);
     return [];
   }
-
-  return (data || []) as Invoice[]; // Rückgabe eines leeren Arrays, wenn data null ist
 };
 
 export const saveInvoice = async (invoice: Omit<Invoice, 'id'>): Promise<Invoice> => {
-  const { data, error } = await supabase
-    .from('invoices')
-    .insert([invoice])
-    .select();  // Füge select() hinzu, um die eingefügten Daten zurückzugeben
-
-  if (error) {
+  try {
+    // Verwende die createInvoice-Funktion aus invoiceService.ts
+    // die korrekt mit der Datenbankstruktur umgeht (separate Tabellen für Rechnungen und Rechnungspositionen)
+    const newInvoice = await createInvoice(invoice);
+    return newInvoice;
+  } catch (error) {
     console.error('Fehler beim Speichern der Rechnung:', error);
     throw error;
   }
-
-  // TypeScript-freundliche Überprüfung mit Type Guard
-  if (!data) {
-    throw new Error('Keine Daten zurückgegeben');
-  }
-  
-  const invoiceData = data as any[];
-  if (invoiceData.length === 0) {
-    throw new Error('Keine Rechnung eingefügt');
-  }
-
-  return invoiceData[0] as Invoice;
 };
 
 export const updateInvoice = async (invoice: Invoice): Promise<Invoice> => {
-  const invoices = await getInvoices();
-  const updatedInvoices = invoices.map(i => i.id === invoice.id ? invoice : i);
-  localStorage.setItem(INVOICES_KEY, JSON.stringify(updatedInvoices));
-  return invoice;
+  try {
+    // Verwende die updateInvoice-Funktion aus invoiceService.ts
+    const updatedInvoice = await updateInvoiceService(invoice);
+    return updatedInvoice;
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren der Rechnung:', error);
+    throw error;
+  }
 };
 
 export const deleteInvoice = async (id: string): Promise<void> => {
-  const invoices = await getInvoices();
-  const filteredInvoices = invoices.filter(i => i.id !== id);
-  localStorage.setItem(INVOICES_KEY, JSON.stringify(filteredInvoices));
+  try {
+    // Verwende die deleteInvoice-Funktion aus invoiceService.ts
+    await deleteInvoiceService(id);
+  } catch (error) {
+    console.error('Fehler beim Löschen der Rechnung:', error);
+    throw error;
+  }
 };
 
 // Helper function to get partners synchronously

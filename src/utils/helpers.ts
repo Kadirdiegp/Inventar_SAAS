@@ -17,8 +17,8 @@ export const generateId = (): string => {
 // Calculate invoice totals
 export const calculateInvoiceTotals = (items: InvoiceItem[]) => {
   const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-  const tax = subtotal * 0.19; // 19% MwSt
-  const total = subtotal + tax;
+  const tax = 0; // Keine MwSt berechnen
+  const total = subtotal; // Gesamtsumme = Zwischensumme (keine MwSt)
   
   return { subtotal, tax, total };
 };

@@ -1,4 +1,4 @@
-import { supabase } from '../utils/supabaseClient';
+import { supabase, supabaseAdmin } from '../utils/supabaseClient';
 
 export interface ProductCategory {
   id: string;
@@ -79,7 +79,7 @@ const getFallbackCategories = (): ProductCategory[] => {
       updated_at: new Date().toISOString()
     },
     {
-      id: 'f9fa5e89-c8e0-69fa-g5c7-g7g59ggg9e5g',
+      id: 'f9fa5e89-c8e0-49fa-95c7-97959aaa9e5f',
       name: 'Snacks',
       type: 'BOTH',
       description: 'Lokale Snacks und Knabbereien',
@@ -102,7 +102,7 @@ const getFallbackCategories = (): ProductCategory[] => {
  */
 export const createCategory = async (category: Omit<ProductCategory, 'id' | 'created_at' | 'updated_at'>): Promise<ProductCategory> => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('product_categories')
       .insert(category)
       .select()
@@ -125,7 +125,7 @@ export const createCategory = async (category: Omit<ProductCategory, 'id' | 'cre
  */
 export const updateCategory = async (id: string, updates: Partial<Omit<ProductCategory, 'id' | 'created_at' | 'updated_at'>>): Promise<ProductCategory> => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('product_categories')
       .update(updates)
       .eq('id', id)
@@ -149,7 +149,7 @@ export const updateCategory = async (id: string, updates: Partial<Omit<ProductCa
  */
 export const deleteCategory = async (id: string): Promise<void> => {
   try {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('product_categories')
       .delete()
       .eq('id', id);

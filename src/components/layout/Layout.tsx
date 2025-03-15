@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Paper } from '@mui/material';
+import { Container, Box } from '@mui/material';
 import Navbar from './Navbar';
 
 interface LayoutProps {
@@ -15,15 +15,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         backgroundColor: '#000000'
       }}>
       <Navbar />
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
-        <Box 
-          sx={{ 
-            p: 3, 
-            borderRadius: 0,
-            backgroundColor: '#000000',
-            color: '#ffffff'
-          }}
-        >
+      <Container maxWidth="lg" sx={{ 
+        mt: { xs: 2, sm: 3 }, 
+        mb: { xs: 2, sm: 3 }, 
+        flexGrow: 1,
+        px: { xs: 2, sm: 3 }
+      }}>
+        <Box sx={{ color: '#ffffff' }}>
           {children}
         </Box>
       </Container>
@@ -37,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           mt: 'auto' 
         }}
       >
-        Inventar & Rechnungsverwaltung © {new Date().getFullYear()}
+        Inventar & Rechnungsverwaltung {new Date().getFullYear()}
       </Box>
     </Box>
   );

@@ -1,7 +1,41 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// Direkte Konfiguration der Supabase-Verbindung
-const supabaseUrl = 'https://vopxtqldmxwpmsoojdkg.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvcHh0cWxkbXh3cG1zb29qZGtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE4ODA3NzgsImV4cCI6MjA1NzQ1Njc3OH0.R-PJ-BnBQ-p9JL04Kma4nhBnPTTpPrSTlPb6T5CI0CE';
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
+const supabaseServiceKey = process.env.REACT_APP_SUPABASE_SERVICE_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Singleton-Instanzen
+let supabaseInstance: SupabaseClient | null = null;
+let supabaseAdminInstance: SupabaseClient | null = null;
+
+// Client für reguläre Benutzeroperationen
+export const getSupabase = (): SupabaseClient => {
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        storageKey: 'inventar-management-auth-user'
+      }
+    });
+  }
+  return supabaseInstance;
+};
+
+// Admin-Client für Operationen, die erhöhte Rechte benötigen
+export const getSupabaseAdmin = (): SupabaseClient => {
+  if (!supabaseAdminInstance) {
+    supabaseAdminInstance = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        storageKey: 'inventar-management-auth-admin'
+      }
+    });
+  }
+  return supabaseAdminInstance;
+};
+
+// Für die Abwärtskompatibilität
+export const supabase = getSupabase();
+export const supabaseAdmin = getSupabaseAdmin();

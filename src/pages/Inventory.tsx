@@ -158,20 +158,81 @@ const Inventory: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.7)' }} />
                   </InputAdornment>
                 ),
+                sx: { 
+                  color: 'white',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.23)',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.4)',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#9B7EE0',
+                  },
+                  '&::placeholder': {
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    opacity: 1,
+                  }
+                }
               }}
               variant="outlined"
+              sx={{
+                '& .MuiInputBase-input': {
+                  color: 'white',
+                }
+              }}
             />
           </Grid>
           <Grid item xs={12} md={4}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel>Kategorie</InputLabel>
+            <FormControl 
+              fullWidth 
+              variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.23)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.4)',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#9B7EE0',
+                }
+              }}
+            >
+              <InputLabel sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Kategorie</InputLabel>
               <Select
                 value={categoryFilter}
                 onChange={handleCategoryChange}
                 label="Kategorie"
+                sx={{ 
+                  color: 'white',
+                  '& .MuiSvgIcon-root': {
+                    color: 'rgba(255, 255, 255, 0.7)',
+                  }
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      backgroundColor: '#1E1E1E',
+                      boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.3)',
+                      '& .MuiMenuItem-root': {
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                        },
+                        '&.Mui-selected': {
+                          backgroundColor: 'rgba(155, 126, 224, 0.15)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(155, 126, 224, 0.25)'
+                          }
+                        }
+                      }
+                    }
+                  }
+                }}
               >
                 {categories.map((category) => (
                   <MenuItem key={category} value={category}>
@@ -186,14 +247,14 @@ const Inventory: React.FC = () => {
       
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
-          <CircularProgress />
+          <CircularProgress sx={{ color: '#9B7EE0' }} />
         </Box>
       ) : filteredProducts.length === 0 ? (
         <Box sx={{ textAlign: 'center', py: 5 }}>
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
             Keine Produkte gefunden
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
             {products.length === 0 
               ? 'Fügen Sie Produkte hinzu, um Ihr Inventar zu verwalten' 
               : 'Versuchen Sie, Ihre Suchkriterien zu ändern'}

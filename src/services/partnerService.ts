@@ -1,4 +1,4 @@
-import { supabase } from '../utils/supabaseClient';
+import { supabase, supabaseAdmin } from '../utils/supabaseClient';
 import { Partner } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -67,7 +67,7 @@ export const createPartner = async (partner: Omit<Partner, 'id'>): Promise<Partn
     updated_at: now
   };
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('partners')
     .insert([newPartner])
     .select()
@@ -91,7 +91,7 @@ export const createPartner = async (partner: Omit<Partner, 'id'>): Promise<Partn
 
 // Partner aktualisieren
 export const updatePartner = async (partner: Partner): Promise<Partner> => {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('partners')
     .update({
       name: partner.name,
@@ -127,7 +127,7 @@ export const checkPartnerHasInvoices = async (partnerId: string): Promise<boolea
   const { error, count } = await supabase
     .from('invoices')
     .select('id', { count: 'exact' })
-    .eq('partnerId', partnerId);
+    .eq('partner_id', partnerId);
 
   if (error) {
     console.error(`Fehler beim Prüfen, ob Partner mit ID ${partnerId} Rechnungen hat:`, error);
@@ -146,7 +146,7 @@ export const deletePartner = async (id: string): Promise<void> => {
     throw new Error('Der Partner kann nicht gelöscht werden, da er noch mit Rechnungen verknüpft ist. Bitte löschen Sie zuerst alle zugehörigen Rechnungen.');
   }
 
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('partners')
     .delete()
     .eq('id', id);

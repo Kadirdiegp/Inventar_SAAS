@@ -13,11 +13,14 @@ import {
   Select,
   TextField,
   Typography,
-  Chip,
   CircularProgress,
   SelectChangeEvent,
-  InputAdornment
+  InputAdornment,
+  useTheme,
+  useMediaQuery,
+  IconButton
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { Product } from '../../types';
 import { ProductCategory, fetchCategories } from '../../services/categoryService';
@@ -34,6 +37,7 @@ const initialProduct: Omit<Product, 'id'> = {
   name: '',
   description: '',
   sellingPrice: 0,
+  purchasePrice: 0,
   stock: 0,
   imageUrl: '',
   category_id: '',
@@ -46,6 +50,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
+  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -103,10 +110,25 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
     
     console.log(`Changing field ${name} to value:`, value);
 
-    if (name === 'sellingPrice' || name === 'stock') {
-      // Konvertiere Strings zu Zahlen für numerische Felder
-      const numValue = parseFloat(value as string);
-      setFormData({ ...formData, [name]: numValue });
+    if (name === 'sellingPrice' || name === 'purchasePrice' || name === 'stock') {
+      // Numerische Felder behandeln
+      if (value === '') {
+        // Bei leeren Eingaben den Wert auf 0 setzen (oder optional auf null)
+        setFormData({ ...formData, [name]: 0 });
+      } else {
+        // Konvertiere Strings zu Zahlen, aber nur wenn eine gültige Zahl vorhanden ist
+        const numValue = value === '' ? 0 : parseFloat(value as string);
+        // Prüfen, ob der Wert gültig ist (keine NaN)
+        if (!isNaN(numValue)) {
+          setFormData({ ...formData, [name]: numValue });
+        } else {
+          // Bei ungültigen Eingaben den Wert nicht aktualisieren und optional einen Fehler setzen
+          setErrors({
+            ...errors,
+            [name]: 'Bitte geben Sie eine gültige Zahl ein'
+          });
+        }
+      }
     } else if (name === 'category_id') {
       const selectedCategory = categories.find(cat => cat.id === value);
       console.log('Selected category:', selectedCategory);
@@ -140,6 +162,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
       newErrors.sellingPrice = 'Verkaufspreis muss größer oder gleich 0 sein';
     }
 
+    if (formData.purchasePrice < 0) {
+      newErrors.purchasePrice = 'Einkaufspreis muss größer oder gleich 0 sein';
+    }
+
     if (formData.stock < 0) {
       newErrors.stock = 'Bestand muss größer oder gleich 0 sein';
     }
@@ -166,11 +192,78 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="md" 
+      fullWidth
+      fullScreen={isMobile}
+      PaperProps={{
+        sx: {
+          backgroundColor: '#121212',
+          backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03))',
+          borderRadius: isMobile ? 0 : '12px',
+          boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.5)',
+          overflow: 'hidden',
+          height: isMobile ? '100%' : 'auto'
+        }
+      }}
+    >
+      <DialogTitle 
+        sx={{ 
+          color: 'white', 
+          fontWeight: 600,
+          px: isMobile ? 2 : 3,
+          py: 2,
+          bgcolor: 'rgba(255, 255, 255, 0.02)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          position: isMobile ? 'sticky' : 'static',
+          top: 0,
+          zIndex: 1200
+        }}
+      >
+        {title}
+        <IconButton 
+          onClick={onClose}
+          sx={{ 
+            color: 'rgba(255, 255, 255, 0.7)',
+            '&:hover': { 
+              color: 'white',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)'
+            },
+            padding: isMobile ? '8px' : '4px'
+          }}
+        >
+          <CloseIcon fontSize={isMobile ? "medium" : "small"} />
+        </IconButton>
+      </DialogTitle>
       <form onSubmit={(e) => e.preventDefault()}>
-        <DialogContent>
-          <Grid container spacing={2}>
+        <DialogContent 
+          sx={{ 
+            p: isMobile ? 2 : 3,
+            overflowY: 'auto',
+            height: isMobile ? 'calc(100% - 130px)' : 'auto',
+            msOverflowStyle: 'none',  /* IE and Edge */
+            scrollbarWidth: 'thin',   /* Firefox */
+            '&::-webkit-scrollbar': {
+              width: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'rgba(0, 0, 0, 0.1)',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'rgba(255, 255, 255, 0.2)',
+              borderRadius: '4px',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              background: 'rgba(255, 255, 255, 0.3)',
+            }
+          }}
+        >
+          <Grid container spacing={isMobile ? 2 : 3}>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -182,76 +275,53 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
                 error={!!errors.name}
                 helperText={errors.name}
                 required
+                variant="outlined"
+                InputLabelProps={{ sx: { color: 'rgba(255, 255, 255, 0.7)' } }}
+                InputProps={{
+                  sx: { 
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.23)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#9B7EE0',
+                    }
+                  }
+                }}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth error={!!errors.category_id}>
-                <InputLabel id="category-label">Kategorie</InputLabel>
-                <Select
-                  labelId="category-label"
-                  name="category_id"
-                  value={formData.category_id || ''}
-                  onChange={handleChange}
-                  label="Kategorie"
-                  disabled={loadingCategories}
-                >
-                  {loadingCategories ? (
-                    <MenuItem value="" disabled>
-                      <CircularProgress size={20} /> Kategorien werden geladen...
-                    </MenuItem>
-                  ) : categories && categories.length > 0 ? (
-                    [
-                      <MenuItem key="placeholder" value="" disabled>Bitte Kategorie auswählen</MenuItem>,
-                      ...categories.map((category) => (
-                        <MenuItem key={category.id} value={category.id}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
-                            <span>{category.name}</span>
-                            <Chip 
-                              label={category.type} 
-                              size="small" 
-                              sx={{ 
-                                backgroundColor: category.type === 'IMPORT' ? '#e3f2fd' : 
-                                                category.type === 'EXPORT' ? '#e8f5e9' : '#fff3e0',
-                                color: category.type === 'IMPORT' ? '#1565c0' : 
-                                       category.type === 'EXPORT' ? '#2e7d32' : '#ef6c00'
-                              }} 
-                            />
-                          </Box>
-                        </MenuItem>
-                      ))
-                    ]
-                  ) : (
-                    <MenuItem value="" disabled>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <ErrorOutlineIcon color="error" fontSize="small" />
-                        <span>Keine Kategorien verfügbar. Bitte überprüfen Sie die Datenbankverbindung.</span>
-                      </Box>
-                    </MenuItem>
-                  )}
-                </Select>
-                {errors.category_id && (
-                  <Typography variant="caption" color="error">
-                    {errors.category_id}
-                  </Typography>
-                )}
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
               <TextField
                 fullWidth
                 margin="dense"
-                label="Beschreibung"
-                name="description"
-                value={formData.description}
+                label="Einkaufspreis"
+                name="purchasePrice"
+                type="number"
+                value={formData.purchasePrice}
                 onChange={handleChange}
-                multiline
-                rows={4}
-                error={!!errors.description}
-                helperText={errors.description}
-                required
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">€</InputAdornment>,
+                  sx: { 
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.23)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#9B7EE0',
+                    },
+                    '& .MuiInputAdornment-root': {
+                      color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                  }
+                }}
+                InputLabelProps={{ sx: { color: 'rgba(255, 255, 255, 0.7)' } }}
+                error={!!errors.purchasePrice}
+                helperText={errors.purchasePrice}
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -262,13 +332,26 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
                 onChange={handleChange}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">€</InputAdornment>,
+                  sx: { 
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.23)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#9B7EE0',
+                    },
+                    '& .MuiInputAdornment-root': {
+                      color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                  }
                 }}
+                InputLabelProps={{ sx: { color: 'rgba(255, 255, 255, 0.7)' } }}
                 error={!!errors.sellingPrice}
                 helperText={errors.sellingPrice}
-                required
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -277,47 +360,211 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, onClose, onSave, produc
                 type="number"
                 value={formData.stock}
                 onChange={handleChange}
+                InputProps={{
+                  sx: { 
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.23)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#9B7EE0',
+                    }
+                  }
+                }}
+                InputLabelProps={{ sx: { color: 'rgba(255, 255, 255, 0.7)' } }}
                 error={!!errors.stock}
                 helperText={errors.stock}
-                required
               />
+              <FormControl 
+                fullWidth 
+                margin="dense" 
+                error={!!errors.category_id}
+                sx={{
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.23)',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.4)',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#9B7EE0',
+                  }
+                }}
+              >
+                <InputLabel id="category-label" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>Kategorie</InputLabel>
+                <Select
+                  labelId="category-label"
+                  name="category_id"
+                  value={formData.category_id || ''}
+                  onChange={handleChange}
+                  label="Kategorie"
+                  disabled={loadingCategories}
+                  sx={{ color: 'white' }}
+                >
+                  {loadingCategories ? (
+                    <MenuItem value="" disabled>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <CircularProgress size={20} sx={{ mr: 1 }} />
+                        <Typography>Kategorien werden geladen...</Typography>
+                      </Box>
+                    </MenuItem>
+                  ) : categories.length === 0 ? (
+                    <MenuItem value="" disabled>
+                      <Typography>Keine Kategorien verfügbar</Typography>
+                    </MenuItem>
+                  ) : (
+                    categories.map(category => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))
+                  )}
+                </Select>
+                {errors.category_id && (
+                  <Typography color="error" variant="caption" sx={{ mt: 0.5, display: 'flex', alignItems: 'center' }}>
+                    <ErrorOutlineIcon fontSize="small" sx={{ mr: 0.5 }} />
+                    {errors.category_id}
+                  </Typography>
+                )}
+              </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 margin="dense"
-                label="Bild-URL"
+                label="Produkt-URL"
                 name="imageUrl"
-                value={formData.imageUrl || ''}
+                value={formData.imageUrl}
                 onChange={handleImageChange}
+                placeholder="https://example.com/image.jpg"
+                InputProps={{
+                  sx: { 
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.23)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#9B7EE0',
+                    }
+                  }
+                }}
+                InputLabelProps={{ sx: { color: 'rgba(255, 255, 255, 0.7)' } }}
               />
+              <TextField
+                fullWidth
+                multiline
+                rows={isMobile ? 3 : 5}
+                margin="dense"
+                label="Beschreibung"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                error={!!errors.description}
+                helperText={errors.description}
+                variant="outlined"
+                InputLabelProps={{ sx: { color: 'rgba(255, 255, 255, 0.7)' } }}
+                InputProps={{
+                  sx: { 
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.23)',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#9B7EE0',
+                    }
+                  }
+                }}
+              />
+              <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, color: 'rgba(255, 255, 255, 0.7)' }}>
+                  Bildvorschau
+                </Typography>
+                <Box 
+                  sx={{ 
+                    width: '100%', 
+                    height: isMobile ? 150 : 200, 
+                    backgroundColor: 'rgba(20, 20, 20, 0.8)',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    overflow: 'hidden',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}
+                >
+                  {imagePreview ? (
+                    <img 
+                      src={imagePreview} 
+                      alt="Produktvorschau" 
+                      style={{ 
+                        maxWidth: '100%', 
+                        maxHeight: '100%', 
+                        objectFit: 'contain' 
+                      }} 
+                    />
+                  ) : (
+                    <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                      Kein Bild ausgewählt
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
             </Grid>
-            {imagePreview && (
-              <Grid item xs={12}>
-                <Typography variant="subtitle2" gutterBottom>Bildvorschau:</Typography>
-                <Box
-                  component="img"
-                  sx={{
-                    height: 200,
-                    width: 'auto',
-                    maxWidth: '100%',
-                    objectFit: 'contain',
-                    border: '1px solid #ddd',
-                    borderRadius: 1
-                  }}
-                  alt="Produktbild"
-                  src={imagePreview}
-                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                    e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Bild+nicht+verfügbar';
-                  }}
-                />
-              </Grid>
-            )}
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Abbrechen</Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary">Speichern</Button>
+        <DialogActions 
+          sx={{ 
+            p: isMobile ? 2 : 3, 
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            bgcolor: 'rgba(255, 255, 255, 0.02)',
+            position: isMobile ? 'sticky' : 'static',
+            bottom: 0,
+            zIndex: 1100,
+            flexDirection: isMobile ? 'column-reverse' : 'row',
+            gap: isMobile ? 1 : 0
+          }}
+        >
+          <Button 
+            onClick={onClose}
+            fullWidth={isMobile}
+            sx={{ 
+              color: 'rgba(255, 255, 255, 0.7)',
+              '&:hover': { 
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: 'white'
+              },
+              borderRadius: '8px',
+              px: 3,
+              py: isMobile ? 1.5 : 1
+            }}
+          >
+            Abbrechen
+          </Button>
+          <Button 
+            onClick={handleSubmit} 
+            color="primary" 
+            variant="contained"
+            fullWidth={isMobile}
+            sx={{
+              backgroundColor: '#6200ea',
+              '&:hover': { backgroundColor: '#5000d1' },
+              borderRadius: '8px',
+              px: 3,
+              py: isMobile ? 1.5 : 1,
+              boxShadow: '0 4px 12px rgba(98, 0, 234, 0.4)'
+            }}
+          >
+            Speichern
+          </Button>
         </DialogActions>
       </form>
     </Dialog>

@@ -56,30 +56,67 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: '#000000', boxShadow: 'none' }}>
+      <AppBar position="sticky" sx={{ backgroundColor: '#000000', boxShadow: 'none' }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <img src={logo} alt="Logo" style={{ height: '60px', marginRight: '20px' }} />
-          <Box sx={{ display: 'flex' }}>
-            {!isMobile && menuItems.map((item) => (
-              <Button 
-                key={item.text}
-                component={Link} 
-                to={item.path}
+          {isMobile ? (
+            <>
+              <IconButton
                 color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={toggleDrawer(true)}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Box 
+                component={Link} 
+                to="/"
                 sx={{ 
-                  mx: 1,
-                  fontWeight: isActive(item.path) ? 'bold' : 'normal',
-                  borderBottom: isActive(item.path) ? '2px solid white' : 'none',
-                  borderRadius: 0,
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  }
+                  marginLeft: 'auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  textDecoration: 'none'
                 }}
               >
-                {item.text}
-              </Button>
-            ))}
-          </Box>
+                <img src={logo} alt="Logo" style={{ height: '50px' }} />
+              </Box>
+            </>
+          ) : (
+            <>
+              <Box 
+                component={Link} 
+                to="/"
+                sx={{ 
+                  display: 'flex',
+                  alignItems: 'center',
+                  textDecoration: 'none'
+                }}
+              >
+                <img src={logo} alt="Logo" style={{ height: '50px' }} />
+              </Box>
+              <Box sx={{ display: 'flex' }}>
+                {menuItems.map((item) => (
+                  <Button 
+                    key={item.text}
+                    component={Link} 
+                    to={item.path}
+                    color="inherit"
+                    sx={{ 
+                      mx: 1,
+                      fontWeight: isActive(item.path) ? 'bold' : 'normal',
+                      borderBottom: isActive(item.path) ? '2px solid white' : 'none',
+                      borderRadius: 0,
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      }
+                    }}
+                  >
+                    {item.text}
+                  </Button>
+                ))}
+              </Box>
+            </>
+          )}
         </Toolbar>
       </AppBar>
 
@@ -96,7 +133,7 @@ const Navbar: React.FC = () => {
               display: 'flex',
               justifyContent: 'space-between',
               p: 2,
-              backgroundColor: '#6200ea',
+              backgroundColor: 'black',
               color: 'white',
             }}
           >
@@ -105,7 +142,7 @@ const Navbar: React.FC = () => {
               <CloseIcon />
             </IconButton>
           </Box>
-          <List>
+          <List sx={{ backgroundColor: 'black', height: '100vh' }}>
             {menuItems.map((item) => (
               <ListItem key={item.text} disablePadding>
                 <ListItemButton
@@ -113,16 +150,16 @@ const Navbar: React.FC = () => {
                   to={item.path}
                   sx={{
                     backgroundColor: isActive(item.path)
-                      ? 'rgba(98, 0, 234, 0.1)'
+                      ? 'rgba(255, 255, 255, 0.1)'
                       : 'transparent',
                     '&:hover': {
-                      backgroundColor: 'rgba(98, 0, 234, 0.1)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     },
                   }}
                 >
                   <ListItemIcon
                     sx={{
-                      color: isActive(item.path) ? '#6200ea' : 'inherit',
+                      color: isActive(item.path) ? 'white' : 'rgba(255, 255, 255, 0.7)',
                     }}
                   >
                     {item.icon}
@@ -131,7 +168,7 @@ const Navbar: React.FC = () => {
                     primary={item.text}
                     primaryTypographyProps={{
                       fontWeight: isActive(item.path) ? 'bold' : 'normal',
-                      color: isActive(item.path) ? '#6200ea' : 'inherit',
+                      color: isActive(item.path) ? 'white' : 'rgba(255, 255, 255, 0.7)',
                     }}
                   />
                 </ListItemButton>

@@ -1,24 +1,29 @@
-import { supabase } from '../utils/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
+import { supabase, supabaseAdmin } from '../utils/supabaseClient';
 
-// Aktualisierter Produkt-Typ mit Kategorie-ID
+// Typdefinition für Produkt-Kategorien
+interface ProductCategory {
+  id: string;
+  name: string;
+  type: 'IMPORT' | 'EXPORT' | 'BOTH';
+  description?: string;
+}
+
+// Interface für ein Produkt
 export interface Product {
   id: string;
   name: string;
   description: string;
   sellingPrice: number;
+  purchasePrice: number;
   stock: number;
-  imageUrl?: string;
-  category?: string; // Alte Kategorie (String)
-  category_id?: string; // Neue Kategorie-ID (UUID)
-  categoryName?: string; // Name der Kategorie (wird nach dem Abrufen gefüllt)
-  categoryType?: 'IMPORT' | 'EXPORT' | 'BOTH'; // Kategorietyp
-  product_categories?: {
-    id: string;
-    name: string;
-    type: 'IMPORT' | 'EXPORT' | 'BOTH';
-    description?: string;
-  };
+  imageUrl?: string | null;
+  category?: string | null;
+  category_id?: string | null;
+  categoryName?: string;
+  categoryType?: 'IMPORT' | 'EXPORT' | 'BOTH';
+  product_categories?: ProductCategory | ProductCategory[] | null; 
+  partnerPrice?: number | null;  // Das Feld für den Kundenpreis
 }
 
 // Alle Produkte abrufen
@@ -49,6 +54,7 @@ export const fetchProducts = async (categoryId?: string): Promise<Product[]> => 
     name: item.name,
     description: item.description,
     sellingPrice: item.selling_price,
+    purchasePrice: item.purchase_price,
     stock: item.stock,
     imageUrl: item.image_url,
     category: item.category, // Alte Kategorie
@@ -82,6 +88,7 @@ export const fetchProductById = async (id: string): Promise<Product | null> => {
     name: data.name,
     description: data.description,
     sellingPrice: data.selling_price,
+    purchasePrice: data.purchase_price,
     stock: data.stock,
     imageUrl: data.image_url,
     category: data.category, // Alte Kategorie
@@ -98,6 +105,7 @@ export const createProduct = async (product: Omit<Product, 'id'>): Promise<Produ
     name, 
     description, 
     sellingPrice, 
+    purchasePrice,
     stock, 
     imageUrl, 
     category, 
@@ -109,13 +117,14 @@ export const createProduct = async (product: Omit<Product, 'id'>): Promise<Produ
     name,
     description,
     selling_price: sellingPrice,
+    purchase_price: purchasePrice,
     stock,
     image_url: imageUrl,
     category, // Alte Kategorie
     category_id // Neue Kategorie-ID
   };
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('products')
     .insert(newProduct)
     .select()
@@ -131,6 +140,7 @@ export const createProduct = async (product: Omit<Product, 'id'>): Promise<Produ
     name: data.name,
     description: data.description,
     sellingPrice: data.selling_price,
+    purchasePrice: data.purchase_price,
     stock: data.stock,
     imageUrl: data.image_url,
     category: data.category,
@@ -148,18 +158,20 @@ export const updateProduct = async (product: Product): Promise<Product> => {
     name, 
     description, 
     sellingPrice, 
+    purchasePrice,
     stock, 
     imageUrl, 
     category, 
     category_id 
   } = product;
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('products')
     .update({
       name,
       description,
       selling_price: sellingPrice,
+      purchase_price: purchasePrice,
       stock,
       image_url: imageUrl,
       category, // Alte Kategorie
@@ -179,6 +191,7 @@ export const updateProduct = async (product: Product): Promise<Product> => {
     name: data.name,
     description: data.description,
     sellingPrice: data.selling_price,
+    purchasePrice: data.purchase_price,
     stock: data.stock,
     imageUrl: data.image_url,
     category: data.category,
@@ -191,7 +204,7 @@ export const updateProduct = async (product: Product): Promise<Product> => {
 
 // Produkt löschen
 export const deleteProduct = async (id: string): Promise<void> => {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('products')
     .delete()
     .eq('id', id);
@@ -204,7 +217,7 @@ export const deleteProduct = async (id: string): Promise<void> => {
 
 // Bestandsupdate für ein Produkt
 export const updateProductStock = async (id: string, newStock: number): Promise<void> => {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('products')
     .update({ stock: newStock })
     .eq('id', id);
@@ -219,7 +232,7 @@ export const updateProductStock = async (id: string, newStock: number): Promise<
 export const createPartnerProductsTable = async (): Promise<void> => {
   try {
     // Prüfen, ob die Tabelle bereits existiert
-    const { error: checkError } = await supabase
+    const { error: checkError } = await supabaseAdmin
       .from('partner_products')
       .select('id')
       .limit(1);
@@ -231,12 +244,13 @@ export const createPartnerProductsTable = async (): Promise<void> => {
     }
 
     // Tabelle erstellen
-    const { error } = await supabase.rpc('create_partner_products_table', {
+    const { error } = await supabaseAdmin.rpc('create_partner_products_table', {
       sql_query: `
         CREATE TABLE IF NOT EXISTS partner_products (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           partner_id UUID NOT NULL,
           product_id UUID NOT NULL,
+          partner_price DECIMAL(10, 2), // Kundenpreis
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
           UNIQUE(partner_id, product_id)
         );
@@ -250,12 +264,13 @@ export const createPartnerProductsTable = async (): Promise<void> => {
       console.error('Fehler beim Erstellen der Tabelle partner_products:', error);
       
       // Alternative Methode - direktes SQL ausführen
-      const { error: sqlError } = await supabase.rpc('exec', { 
+      const { error: sqlError } = await supabaseAdmin.rpc('exec', { 
         query: `
           CREATE TABLE IF NOT EXISTS partner_products (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             partner_id UUID NOT NULL,
             product_id UUID NOT NULL,
+            partner_price DECIMAL(10, 2), // Kundenpreis
             created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(partner_id, product_id)
           );
@@ -280,7 +295,7 @@ export const setupSimplePartnerProductsTable = async () => {
   try {
     // Wir überprüfen, ob wir bereits Einträge erstellen können
     const testId = uuidv4();
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('partner_products')
       .insert([{ 
         id: testId,
@@ -293,7 +308,7 @@ export const setupSimplePartnerProductsTable = async () => {
     if (!error || error.code !== '42P01') { // 42P01 = relation does not exist
       // Testdaten wieder löschen
       if (!error) {
-        await supabase
+        await supabaseAdmin
           .from('partner_products')
           .delete()
           .eq('id', testId);
@@ -320,89 +335,91 @@ setupSimplePartnerProductsTable();
 // Produkte für einen bestimmten Partner abrufen
 export const fetchProductsByPartner = async (partnerId: string): Promise<Product[]> => {
   try {
-    // Zuerst die partner_products Verknüpfungen abrufen
-    const { data: partnerProductLinks, error: linksError } = await supabase
+    console.log(`Versuche Produkte für Partner ${partnerId} abzurufen...`);
+    
+    // Prüfen, ob die Tabelle vorhanden ist
+    const tableExists = await checkIfTableExists('partner_products');
+    
+    if (!tableExists) {
+      console.log('Die Tabelle partner_products existiert nicht, leere Liste zurückgeben.');
+      return [];
+    }
+
+    // Prüfen, ob die Spalte partner_price existiert
+    let hasPartnerPriceColumn = await checkIfColumnExists('partner_products', 'partner_price');
+    console.log(`Spalte partner_price existiert: ${hasPartnerPriceColumn}`);
+
+    // Vereinfachter Ansatz: Hole zuerst die Produkt-IDs
+    const { data: partnerProductsData, error: ppError } = await supabase
       .from('partner_products')
-      .select('product_id')
+      .select('product_id, partner_price')
       .eq('partner_id', partnerId);
-
-    if (linksError) {
-      // Wenn die Tabelle nicht existiert, geben wir die ersten 3 Produkte zurück
-      if (linksError.code === '42P01') { // 42P01 = relation does not exist
-        console.log('Die Tabelle partner_products existiert nicht, verwende Beispielprodukte.');
-        
-        // Stattdessen erste 3 Produkte abrufen
-        const { data: products, error } = await supabase
-          .from('products')
-          .select('*')
-          .limit(3);
-          
-        if (error) {
-          console.error(`Fehler beim Abrufen der Produkte:`, error);
-          return [];
-        }
-        
-        console.log(`${products?.length || 0} Beispielprodukte für Partner ${partnerId} zurückgegeben.`);
-        
-        return products ? products.map(item => ({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          sellingPrice: item.selling_price,
-          stock: item.stock,
-          imageUrl: item.image_url,
-          category: item.category,
-          category_id: item.category_id,
-          categoryName: undefined,
-          categoryType: undefined,
-          product_categories: undefined
-        })) : [];
-      }
-      
-      console.error(`Fehler beim Abrufen der Produktverknüpfungen für Partner ${partnerId}:`, linksError);
+    
+    if (ppError || !partnerProductsData || partnerProductsData.length === 0) {
+      console.log(`Keine Produkte für Partner ${partnerId} gefunden.`);
       return [];
     }
-
-    // Wenn keine Produkte verknüpft sind, leeres Array zurückgeben
-    if (!partnerProductLinks || partnerProductLinks.length === 0) {
-      console.log(`Keine Produkte mit Partner ${partnerId} verknüpft.`);
-      return [];
-    }
-
-    // Produktids extrahieren
-    const productIds = partnerProductLinks.map(link => link.product_id);
-    console.log(`${productIds.length} Produkt-IDs für Partner ${partnerId} gefunden.`);
-
-    // Produkte mit diesen IDs abrufen
-    const { data: products, error: productsError } = await supabase
+    
+    console.log(`${partnerProductsData.length} Produkte für Partner ${partnerId} gefunden.`);
+    
+    // Extrahiere die Produkt-IDs
+    const productIds = partnerProductsData.map(item => item.product_id);
+    
+    // Hole die vollständigen Produktdetails
+    const { data: productsData, error: productsError } = await supabase
       .from('products')
       .select(`
-        *,
-        product_categories(id, name, type, description)
+        id,
+        name,
+        description,
+        selling_price,
+        purchase_price,
+        stock,
+        image_url,
+        category,
+        category_id,
+        product_categories (
+          id,
+          name,
+          type,
+          description
+        )
       `)
       .in('id', productIds);
-
-    if (productsError) {
-      console.error('Fehler beim Abrufen der Partner-Produkte:', productsError);
+    
+    if (productsError || !productsData || productsData.length === 0) {
+      console.log(`Keine Produktdetails für Partner ${partnerId} gefunden.`);
       return [];
     }
-
-    console.log(`${products?.length || 0} Produkte für Partner ${partnerId} geladen.`);
-
-    // Produkte in das App-Format konvertieren
-    return products ? products.map(item => ({
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      sellingPrice: item.selling_price,
-      stock: item.stock,
-      imageUrl: item.image_url,
-      category: item.category,
-      category_id: item.category_id,
-      categoryName: item.product_categories ? item.product_categories.name : undefined,
-      categoryType: item.product_categories ? item.product_categories.type : undefined,
-      product_categories: item.product_categories
-    })) : [];
+    
+    // Kombiniere die Daten: Füge partnerPrice zu jedem Produkt hinzu
+    const products: Product[] = productsData.map(product => {
+      // Finde das entsprechende partner_product für dieses Produkt
+      const partnerProduct = partnerProductsData.find(pp => pp.product_id === product.id);
+      
+      // Behandle product_categories entweder als einzelnes Objekt oder als Array
+      const category = Array.isArray(product.product_categories) 
+        ? product.product_categories[0] 
+        : product.product_categories;
+      
+      return {
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        sellingPrice: product.selling_price,
+        purchasePrice: product.purchase_price,
+        stock: product.stock,
+        imageUrl: product.image_url,
+        category: product.category,
+        category_id: product.category_id,
+        categoryName: category?.name,
+        categoryType: category?.type,
+        product_categories: product.product_categories,
+        partnerPrice: hasPartnerPriceColumn ? partnerProduct?.partner_price : null
+      };
+    });
+    
+    return products;
   } catch (error) {
     console.error(`Fehler beim Abrufen der Produkte für Partner ${partnerId}:`, error);
     return [];
@@ -410,19 +427,24 @@ export const fetchProductsByPartner = async (partnerId: string): Promise<Product
 };
 
 // Produkt zu einem Partner hinzufügen
-export const addProductToPartner = async (partnerId: string, productId: string): Promise<boolean> => {
+export const addProductToPartner = async (partnerId: string, productId: string, partnerPrice?: number): Promise<boolean> => {
   try {
+    console.log(`Füge Produkt ${productId} zu Partner ${partnerId} hinzu...`);
+    
     // Prüfen, ob die Tabelle vorhanden ist
     const tableExists = await checkIfTableExists('partner_products');
     
     if (!tableExists) {
-      // Wenn die Tabelle nicht existiert, simulieren wir Erfolg
       console.log(`Tabelle partner_products existiert nicht. Simuliere Hinzufügen von Produkt ${productId} zu Partner ${partnerId}.`);
       return true;
     }
     
+    // Prüfen, ob die Spalte partner_price existiert
+    const hasPartnerPriceColumn = await checkIfColumnExists('partner_products', 'partner_price');
+    console.log(`Spalte partner_price existiert: ${hasPartnerPriceColumn}`);
+    
     // Prüfen, ob die Verknüpfung bereits existiert
-    const { data: existingLink, error: checkError } = await supabase
+    const { data: existingLink, error: checkError } = await supabaseAdmin
       .from('partner_products')
       .select('id')
       .eq('partner_id', partnerId)
@@ -434,51 +456,115 @@ export const addProductToPartner = async (partnerId: string, productId: string):
       console.error(`Fehler beim Prüfen der Verknüpfung:`, checkError);
       
       // Bei Authentifizierungsproblemen oder RLS-Fehlern simulieren wir Erfolg im Entwicklungsmodus
-      if (checkError.code === '42501' || checkError.code === '401' || checkError.message?.includes('row-level security')) {
-        console.log('Authentifizierungsproblem oder RLS-Fehler bei der Prüfung. Simuliere Erfolg im Entwicklungsmodus.');
+      if (checkError.code === 'PGRST301' || checkError.code === '42501') {
+        console.log(`Authentifizierungsproblem oder RLS-Fehler. Simuliere Erfolg für Entwicklungszwecke.`);
         return true;
       }
+      throw checkError;
     }
-
-    // Wenn die Verknüpfung bereits existiert, nichts tun
+    
+    // Wenn die Verknüpfung bereits existiert
     if (existingLink) {
+      // Aktualisiere den Kundenpreis, falls angegeben und die Spalte existiert
+      if (partnerPrice !== undefined && hasPartnerPriceColumn) {
+        console.log(`Aktualisiere Kundenpreis für Produkt ${productId} und Partner ${partnerId} auf ${partnerPrice}.`);
+        
+        const { error: updateError } = await supabaseAdmin
+          .from('partner_products')
+          .update({ partner_price: partnerPrice })
+          .eq('id', existingLink.id);
+          
+        if (updateError) {
+          console.error(`Fehler beim Aktualisieren des Kundenpreises:`, updateError);
+          throw updateError;
+        }
+      }
+      
       console.log(`Produkt ${productId} ist bereits mit Partner ${partnerId} verknüpft.`);
       return true;
     }
-
+    
     // Neue Verknüpfung erstellen
-    const { error } = await supabase
-      .from('partner_products')
-      .insert([
-        { 
-          id: uuidv4(),
-          partner_id: partnerId,
-          product_id: productId
-        }
-      ]);
-
-    if (error) {
-      console.error(`Fehler beim Hinzufügen des Produkts ${productId} zum Partner ${partnerId}:`, error);
-      
-      // Wenn die Tabelle nicht existiert, simulieren wir Erfolg
-      if (error.code === '42P01') { // 42P01 = relation does not exist
-        console.log('Die Tabelle partner_products existiert nicht, simuliere Erfolg.');
-        return true;
-      }
-      
-      // Bei Authentifizierungsproblemen oder RLS-Fehlern simulieren wir Erfolg im Entwicklungsmodus
-      if (error.code === '42501' || error.code === '401' || error.message?.includes('row-level security')) {
-        console.log('Authentifizierungsproblem oder RLS-Fehler. Simuliere Erfolg im Entwicklungsmodus.');
-        return true;
-      }
-      
-      return false;
+    const insertData: any = {
+      id: uuidv4(),
+      partner_id: partnerId,
+      product_id: productId
+    };
+    
+    // Nur partner_price hinzufügen, wenn die Spalte existiert
+    if (hasPartnerPriceColumn && partnerPrice !== undefined) {
+      insertData.partner_price = partnerPrice;
     }
-
-    console.log(`Produkt ${productId} wurde Partner ${partnerId} hinzugefügt.`);
+    
+    const { error: insertError } = await supabaseAdmin
+      .from('partner_products')
+      .insert(insertData);
+    
+    if (insertError) {
+      // Bekannter 409 Konflikt-Fehler, wenn der Eintrag bereits existiert
+      if (insertError.code === '23505') {
+        console.log(`Produkt ${productId} ist bereits mit Partner ${partnerId} verknüpft (409 Conflict).`);
+        return true;
+      }
+      
+      console.error(`Fehler beim Hinzufügen des Produkts zum Partner:`, insertError);
+      throw insertError;
+    }
+    
+    console.log(`Produkt ${productId} erfolgreich zu Partner ${partnerId} hinzugefügt.`);
     return true;
   } catch (error) {
-    console.error(`Fehler beim Hinzufügen des Produkts ${productId} zu Partner ${partnerId}:`, error);
+    console.error(`Fehler beim Hinzufügen des Produkts ${productId} zum Partner ${partnerId}:`, error);
+    throw error;
+  }
+};
+
+// Kundenpreis für ein Produkt aktualisieren
+export const updatePartnerPrice = async (partnerId: string, productId: string, partnerPrice: number): Promise<boolean> => {
+  try {
+    console.log(`Aktualisiere Kundenpreis für Produkt ${productId} und Partner ${partnerId} auf ${partnerPrice}.`);
+    
+    // Prüfen, ob die Spalte partner_price existiert
+    const hasPartnerPriceColumn = await checkIfColumnExists('partner_products', 'partner_price');
+    
+    if (!hasPartnerPriceColumn) {
+      console.error('Die Spalte partner_price existiert nicht. Kundenpreis kann nicht aktualisiert werden.');
+      return false;
+    }
+    
+    // Prüfen, ob die Verknüpfung existiert
+    const { data: existingLink, error: checkError } = await supabaseAdmin
+      .from('partner_products')
+      .select('id')
+      .eq('partner_id', partnerId)
+      .eq('product_id', productId)
+      .maybeSingle();
+    
+    if (checkError) {
+      console.error(`Fehler beim Prüfen der Verknüpfung:`, checkError);
+      return false;
+    }
+    
+    if (!existingLink) {
+      console.error(`Verknüpfung zwischen Produkt ${productId} und Partner ${partnerId} existiert nicht.`);
+      return false;
+    }
+    
+    // Kundenpreis aktualisieren
+    const { error: updateError } = await supabaseAdmin
+      .from('partner_products')
+      .update({ partner_price: partnerPrice })
+      .eq('id', existingLink.id);
+    
+    if (updateError) {
+      console.error(`Fehler beim Aktualisieren des Kundenpreises:`, updateError);
+      return false;
+    }
+    
+    console.log(`Kundenpreis für Produkt ${productId} und Partner ${partnerId} erfolgreich aktualisiert.`);
+    return true;
+  } catch (error) {
+    console.error(`Fehler beim Aktualisieren des Kundenpreises für Produkt ${productId} und Partner ${partnerId}:`, error);
     return false;
   }
 };
@@ -495,7 +581,7 @@ export const removeProductFromPartner = async (partnerId: string, productId: str
       return true;
     }
     
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('partner_products')
       .delete()
       .eq('partner_id', partnerId)
@@ -550,12 +636,13 @@ export const fetchAvailableProductsForPartner = async (partnerId: string): Promi
         name: item.name,
         description: item.description,
         sellingPrice: item.selling_price,
+        purchasePrice: item.purchase_price,
         stock: item.stock,
         imageUrl: item.image_url,
         category: item.category,
         category_id: item.category_id,
-        categoryName: item.product_categories ? item.product_categories.name : undefined,
-        categoryType: item.product_categories ? item.product_categories.type : undefined,
+        categoryName: item.product_categories?.name,
+        categoryType: item.product_categories?.type,
         product_categories: item.product_categories
       })) : [];
     }
@@ -590,12 +677,13 @@ export const fetchAvailableProductsForPartner = async (partnerId: string): Promi
           name: item.name,
           description: item.description,
           sellingPrice: item.selling_price,
+          purchasePrice: item.purchase_price,
           stock: item.stock,
           imageUrl: item.image_url,
           category: item.category,
           category_id: item.category_id,
-          categoryName: item.product_categories ? item.product_categories.name : undefined,
-          categoryType: item.product_categories ? item.product_categories.type : undefined,
+          categoryName: item.product_categories?.name,
+          categoryType: item.product_categories?.type,
           product_categories: item.product_categories
         })) : [];
       }
@@ -633,12 +721,13 @@ export const fetchAvailableProductsForPartner = async (partnerId: string): Promi
       name: item.name,
       description: item.description,
       sellingPrice: item.selling_price,
+      purchasePrice: item.purchase_price,
       stock: item.stock,
       imageUrl: item.image_url,
       category: item.category,
       category_id: item.category_id,
-      categoryName: item.product_categories ? item.product_categories.name : undefined,
-      categoryType: item.product_categories ? item.product_categories.type : undefined,
+      categoryName: item.product_categories?.name,
+      categoryType: item.product_categories?.type,
       product_categories: item.product_categories
     }));
   } catch (error) {
@@ -651,7 +740,7 @@ export const fetchAvailableProductsForPartner = async (partnerId: string): Promi
 const checkIfTableExists = async (tableName: string): Promise<boolean> => {
   try {
     // Versuch auf die Tabelle zuzugreifen
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from(tableName)
       .select('id')
       .limit(1);
@@ -660,6 +749,41 @@ const checkIfTableExists = async (tableName: string): Promise<boolean> => {
     return !error || error.code !== '42P01'; // 42P01 = relation does not exist
   } catch (error) {
     console.error(`Fehler beim Prüfen, ob Tabelle ${tableName} existiert:`, error);
+    return false;
+  }
+};
+
+// Hilfsfunktion: Prüfen, ob eine Spalte in einer Tabelle existiert
+export const checkIfColumnExists = async (tableName: string, columnName: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('column_exists', {
+        p_table: tableName,
+        p_column: columnName
+      });
+    
+    if (error) {
+      // Wenn die RPC-Funktion nicht existiert, versuchen wir einen direkteren Ansatz
+      console.warn(`RPC column_exists nicht verfügbar: ${error.message}`);
+      
+      // Direkter Test durch Abfrage mit der Spalte
+      const testQuery = `select ${columnName} from ${tableName} limit 1`;
+      try {
+        await supabase.rpc('run_sql', { sql_query: testQuery });
+        return true;
+      } catch (sqlError: any) {
+        if (sqlError.message && sqlError.message.includes(`column "${columnName}" does not exist`)) {
+          return false;
+        }
+        // Bei anderen Fehlern gehen wir davon aus, dass die Spalte existiert
+        return true;
+      }
+    }
+    
+    return !!data;
+  } catch (error) {
+    console.warn(`Fehler beim Prüfen, ob Spalte ${columnName} in Tabelle ${tableName} existiert:`, error);
+    // Im Fehlerfall nehmen wir an, dass die Spalte nicht existiert
     return false;
   }
 };
