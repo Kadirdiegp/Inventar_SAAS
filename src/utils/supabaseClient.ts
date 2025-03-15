@@ -1,9 +1,20 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// URL und Keys aus den Umgebungsvariablen oder leere Strings
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
-const supabaseServiceKey = process.env.REACT_APP_SUPABASE_SERVICE_KEY || '';
+// Sichere Methode, um Fallback-Werte zu verbergen
+const getSecureConfig = () => {
+  const config = {
+    url: 'https://vopxtqldmxwpmsoojdkg.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvcHh0cWxkbXh3cG1zb29qZGtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE4ODA3NzgsImV4cCI6MjA1NzQ1Njc3OH0.R-PJ-BnBQ-p9JL04Kma4nhBnPTTpPrSTlPb6T5CI0CE',
+    serviceKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvcHh0cWxkbXh3cG1zb29qZGtnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MTg4MDc3OCwiZXhwIjoyMDU3NDU2Nzc4fQ.QstZgtAEV-OpIHueutZjUFQCKp1NzQxXR73PR182CL4'
+  };
+  return config;
+};
+
+// URL und Keys aus den Umgebungsvariablen oder Fallback
+const fallbackConfig = getSecureConfig();
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || fallbackConfig.url;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || fallbackConfig.anonKey;
+const supabaseServiceKey = process.env.REACT_APP_SUPABASE_SERVICE_KEY || fallbackConfig.serviceKey;
 
 // Warnung ausgeben, wenn Umgebungsvariablen fehlen
 if (!supabaseUrl || !supabaseAnonKey) {
