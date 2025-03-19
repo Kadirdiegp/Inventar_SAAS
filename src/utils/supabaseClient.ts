@@ -2,10 +2,14 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // Sichere Methode, um Fallback-Werte zu verbergen
 const getSecureConfig = () => {
+  // ACHTUNG: API-Keys sollten NIEMALS direkt im Quellcode gespeichert werden!
+  // Verwenden Sie stattdessen Umgebungsvariablen (.env Datei)
+  console.warn('WARNUNG: Fallback-Konfiguration wird verwendet. Bitte stellen Sie sicher, dass Sie die erforderlichen Umgebungsvariablen gesetzt haben.');
+  
   const config = {
     url: 'https://vopxtqldmxwpmsoojdkg.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvcHh0cWxkbXh3cG1zb29qZGtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE4ODA3NzgsImV4cCI6MjA1NzQ1Njc3OH0.R-PJ-BnBQ-p9JL04Kma4nhBnPTTpPrSTlPb6T5CI0CE',
-    serviceKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvcHh0cWxkbXh3cG1zb29qZGtnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MTg4MDc3OCwiZXhwIjoyMDU3NDU2Nzc4fQ.QstZgtAEV-OpIHueutZjUFQCKp1NzQxXR73PR182CL4'
+    anonKey: 'API-KEY_HIER_NICHT_DIREKT_EINGEBEN', // Ersetzen Sie durch Umgebungsvariable
+    serviceKey: 'SERVICE-KEY_HIER_NICHT_DIREKT_EINGEBEN' // Ersetzen Sie durch Umgebungsvariable
   };
   return config;
 };

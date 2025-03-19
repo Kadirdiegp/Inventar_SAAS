@@ -1,12 +1,12 @@
 import React from 'react';
 import { Container, Box, Typography, Link } from '@mui/material';
 import Navbar from './Navbar';
+import { Outlet } from 'react-router-dom';
 
 interface LayoutProps {
-  children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = () => {
   return (
     <Box sx={{ 
         display: 'flex', 
@@ -22,7 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         px: { xs: 2, sm: 3 }
       }}>
         <Box sx={{ color: '#ffffff' }}>
-          {children}
+          <Outlet />
         </Box>
       </Container>
       <Box 

@@ -13,7 +13,8 @@ import {
   ListItemText, 
   Box,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Tooltip
 } from '@mui/material';
 import { 
   Menu as MenuIcon, 
@@ -21,16 +22,20 @@ import {
   Receipt as ReceiptIcon, 
   People as PeopleIcon, 
   Dashboard as DashboardIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  Logout as LogoutIcon
 } from '@mui/icons-material';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/2.png';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Navbar: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
@@ -52,7 +57,14 @@ const Navbar: React.FC = () => {
       setDrawerOpen(open);
     };
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login');
+  };
+
   const isActive = (path: string) => location.pathname === path;
+
+  const userEmail = user?.email;
 
   return (
     <>
@@ -80,6 +92,15 @@ const Navbar: React.FC = () => {
               >
                 <img src={logo} alt="Logo" style={{ height: '50px' }} />
               </Box>
+              <Tooltip title="Abmelden">
+                <IconButton 
+                  color="inherit" 
+                  onClick={handleLogout}
+                  sx={{ marginLeft: 1 }}
+                >
+                  <LogoutIcon />
+                </IconButton>
+              </Tooltip>
             </>
           ) : (
             <>
@@ -94,7 +115,7 @@ const Navbar: React.FC = () => {
               >
                 <img src={logo} alt="Logo" style={{ height: '50px' }} />
               </Box>
-              <Box sx={{ display: 'flex' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 {menuItems.map((item) => (
                   <Button 
                     key={item.text}
@@ -114,6 +135,20 @@ const Navbar: React.FC = () => {
                     {item.text}
                   </Button>
                 ))}
+                <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: '#9e9e9e', mr: 1 }}>
+                    {userEmail}
+                  </Typography>
+                  <Tooltip title="Abmelden">
+                    <IconButton 
+                      color="inherit" 
+                      onClick={handleLogout}
+                      size="small"
+                    >
+                      <LogoutIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
               </Box>
             </>
           )}
@@ -174,6 +209,43 @@ const Navbar: React.FC = () => {
                 </ListItemButton>
               </ListItem>
             ))}
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={handleLogout}
+                sx={{
+                  marginTop: 2,
+                  backgroundColor: 'transparent',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.7)',
+                  }}
+                >
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Abmelden"
+                  primaryTypographyProps={{
+                    fontWeight: 'normal',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+            <ListItem sx={{ mt: 2 }}>
+              <ListItemText
+                primary={userEmail}
+                primaryTypographyProps={{
+                  fontWeight: 'normal',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  fontSize: '0.8rem',
+                }}
+              />
+            </ListItem>
           </List>
         </Box>
       </Drawer>
